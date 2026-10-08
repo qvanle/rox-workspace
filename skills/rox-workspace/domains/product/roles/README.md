@@ -13,7 +13,7 @@ Gates (who may do what) are advisory; the gate tables are in `docs/specs/rox-wor
 | `entry-se` | entry | Entry-level software engineer | Same duties as jr-se; executed by Codex | codex | Codex | `se.md` (tier entry) |
 | `sa` | sysadmin, system-admin | System administrator | Keep it running: deploy, cluster, secrets, runbooks | inline | inherit | `sa.md` |
 | `qa` | quality-assurance | Quality assurance | Make it testable before it is built: criteria and test plan | inline | inherit | `qa.md` |
-| `qc` | quality-control | Quality control | Prove it works after it is built: verify and move to Done | inline | inherit | `qc.md` |
+| `qc` | quality-control | Quality control | Prove it works after it is built: verify and move to Done | subagent | sonnet | `qc.md` |
 
 ## Gates in one table
 
@@ -31,6 +31,6 @@ Gates (who may do what) are advisory; the gate tables are in `docs/specs/rox-wor
 | Infra, deploy, secrets, runbooks | sa |
 | Decision docs | the deciding role (po product, sr-se technical, des design, sa infra) |
 
-Read-only collection (search, read, probe, summarise) is delegated to `jr-se` (roxctl reads) and `entry-se` (code and docs, Codex read-only); see `collect.md`.
+Read-only collection (search, read, probe, summarise) is delegated to `jr-se` (roxctl reads) and `entry-se` (code and docs, Codex read-only); see `collect.md`. Long commands whose output needs judging can be run by Codex from a command file (run mode, same file).
 
 Separation of duties (warn once per task): the implementer is not its `qc`; the drafter of a vision, strategy or tactic is not its ratifier.

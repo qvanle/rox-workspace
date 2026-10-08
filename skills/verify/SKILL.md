@@ -13,6 +13,11 @@ Run `roxctl workspace pma show <id>` and read the requirement R-ids, task bucket
 No spec (including a chore): report evidence in the reply, request a spec from sr-se, and do not move to Done. Missing/empty plan: report the QA gap, never infer a passing plan.
 In the code repo record `git rev-parse HEAD` and `git status --short`. State dirty-tree changes explicitly and that evidence includes them; never imply that the SHA alone reproduces those results.
 
+## 1b. Mode
+
+By default `verify` runs as the `rox-workspace:qc` subagent (a fresh context, brief from `templates/qc-brief.md`): the agent does sections 3 and 4, the relay
+re-runs one plan command and does the move in section 5. "Verify inline" runs everything in the main session.
+
 ## 2. Separation of duties
 
 | Situation | Action |

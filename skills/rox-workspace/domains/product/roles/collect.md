@@ -1,7 +1,7 @@
 # Collect work: read-only gathering goes to jr-se and entry-se
 
-Applies to every role. Reading and collecting information is cheap to parallelise and needs no judgment, so the expensive session
-breaks it down, delegates it, and keeps only the synthesis and the decisions. No approved spec and no pma task are needed.
+Applies to every role. Reading and collecting is cheap to parallelise and needs no judgment, so the expensive session breaks it down,
+delegates it, and keeps the synthesis and decisions. No approved spec or pma task is needed.
 
 ## When to delegate
 
@@ -10,10 +10,7 @@ breaks it down, delegates it, and keeps only the synthesis and the decisions. No
 | Searching or reading code, docs, configs, logs, saved reports; listing tasks or docs; running read probes; checking claims one by one | Choosing between options, trade-offs, decisions, anything that depends on the previous answer |
 | Each sub-question is independent and answerable from files or read commands | A sub-question that takes under about 3 tool calls (the brief costs more than the work) |
 
-## Break down
-
-Split the request into independent sub-questions. Each has: one question, its scope (paths, commands, repo), the answer form, and a cap
-("at most 10 findings"). Group them by executor and, for Codex, by repo.
+**Break down** into independent sub-questions, each with one question, its scope, the answer form and a cap ("at most 10 findings"); group them by executor and, for Codex, by repo.
 
 ## Route
 
@@ -45,3 +42,9 @@ UNVERIFIED: <claims without evidence>
 Fill `templates/collect-brief.md` (one per executor job), launch, wait (Codex: `wait` from inside the repo), read the blocks. Treat them as
 unchecked: open one or two cited `file:line` per job before relying on a conclusion. Merge into one answer with sources. If Codex is
 unavailable, route its questions to `jr-se`; if that fails too, ask the user before reading inline.
+
+## Run mode
+
+A long command whose output needs judging (suite, build, wide log read): write a command file and run it with `entry-se-run.sh run <repo> <file>`
+(spec `rox-workspace-run-mode.md`). Codex runs it verbatim into `<repo>/.codex-runs/<job>.log`; `run-lint.sh` refuses mutating commands before launch;
+`result --commands <file>` checks the verdict against the exit codes. Never for short commands or anything that changes state.

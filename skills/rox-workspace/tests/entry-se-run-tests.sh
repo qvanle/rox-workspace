@@ -12,8 +12,55 @@ test_tmp="$(cd -- "$test_tmp" && pwd -P)" || exit 1
 trap 'rm -rf -- "$test_tmp"' EXIT
 mkdir -p "$test_tmp/repo with spaces" "$test_tmp/other repo"
 repo="$test_tmp/repo with spaces"
+other_repo="$test_tmp/other repo"
+make_fixture_repo() {
+  local fixture="$1" ignored="$2"
+  mkdir -p "$fixture/.git/refs/heads" "$fixture/.git/objects/info" \
+    "$fixture/.git/objects/pack" "$fixture/.git/info"
+  printf 'ref: refs/heads/main\n' > "$fixture/.git/HEAD"
+  cat > "$fixture/.git/config" <<'CONFIG'
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+CONFIG
+  printf '.gitignore\n' > "$fixture/.git/info/exclude"
+  if [ "$ignored" = yes ]; then printf '.codex-runs/\n' > "$fixture/.gitignore"; fi
+}
+make_fixture_repo "$repo" yes
+make_fixture_repo "$other_repo" no
 printf '%s\n\n' '--brief-marker: "quotes" $literal and `literal`' 'second line' > "$test_tmp/brief file"
 printf '%s\n\n' '--answer-marker: choose option B' 'second line' > "$test_tmp/answer file"
+cat > "$test_tmp/run commands" <<COMMANDS
+id: smoke-1
+repo: $repo
+mode: read-only
+question: which smoke checks pass?
+printf '%s\\n' 'run-one'
+printf '%s\\n' 'run-two'
+COMMANDS
+cat > "$test_tmp/refused commands" <<COMMANDS
+id: smoke-2
+repo: $repo
+mode: write
+question: refused command
+git push origin main
+COMMANDS
+cat > "$test_tmp/unignored commands" <<COMMANDS
+id: smoke-3
+repo: $other_repo
+mode: write
+question: ignored path check
+printf '%s\\n' 'safe'
+COMMANDS
+cat > "$test_tmp/mismatched repo commands" <<COMMANDS
+id: smoke-4
+repo: $other_repo
+mode: write
+question: repository consistency check
+printf '%s\\n' 'safe'
+COMMANDS
 export FAKE_ROOT="$test_tmp" FAKE_REPO="$repo"
 export CODEX_COMPANION="$test_tmp/fake-companion.mjs" ENTRY_SE_POLL=0.05
 export CODEX_COMPANION_SESSION_ID=test-session
@@ -49,11 +96,26 @@ if (cmd === 'status' && args[0] === '--all') {
 } else if (cmd === 'task') {
   assert(process.cwd() === process.env.FAKE_REPO);
   const resume = args.includes('--resume-last');
-  const w = process.env.FAKE_READONLY ? '' : ' --write';
-  assert(args.join(' ') === (resume ? '--background' + w + ' --resume-last' : '--background' + w));
   assert(process.env.CODEX_COMPANION_SESSION_ID === 'test-session');
-  const expected = fs.readFileSync(path.join(root, resume ? 'answer file' : 'brief file'));
-  assert(fs.readFileSync(0).equals(expected));
+  const prompt = fs.readFileSync(0);
+  if (process.env.FAKE_RUN) {
+    assert(!resume && args.join(' ') === `--background --write --model ${process.env.FAKE_MODEL || 'gpt-6-luna'} --effort ${process.env.FAKE_EFFORT || 'medium'}`);
+    const brief = prompt.toString();
+    const sectionMarker = 'Command file (metadata and commands, supplied verbatim):\n\n';
+    const sectionStart = brief.indexOf(sectionMarker);
+    const sectionEnd = brief.indexOf("\n\nAnswer the file's", sectionStart + sectionMarker.length);
+    assert(sectionStart >= 0 && sectionEnd > sectionStart);
+    const section = brief.slice(sectionStart + sectionMarker.length, sectionEnd).replace(/\n+$/, '');
+    const expected = fs.readFileSync(process.env.FAKE_COMMANDS, 'utf8').replace(/\n+$/, '');
+    assert(section === expected && !section.includes('unexpected-extra-command'));
+    assert(brief.includes(`Repo: ${process.env.FAKE_REPO}`));
+  } else {
+    const w = process.env.FAKE_READONLY ? '' : ' --write';
+    const me = ` --model ${process.env.FAKE_MODEL || 'gpt-6-luna'} --effort ${process.env.FAKE_EFFORT || 'medium'}`;
+    assert(args.join(' ') === (resume ? '--background' + w + ' --resume-last' + me : '--background' + w + me));
+    const expected = fs.readFileSync(path.join(root, resume ? 'answer file' : 'brief file'));
+    assert(prompt.equals(expected));
+  }
   fs.writeFileSync(path.join(root, 'launched'), resume ? 'resume' : 'start');
   if (process.env.FAKE_BAD_LAUNCH) console.log('--brief-marker: malformed output');
   else console.log(`Codex ${resume ? 'Resume' : 'Task'} started in the background as task-test-123. Check /codex:status task-test-123 for progress.`);
@@ -108,7 +170,51 @@ done
 check 'resume also refuses active job' run 1 resume "$repo" "$test_tmp/answer file"
 unset FAKE_BUSY
 
+export FAKE_RUN=1 FAKE_COMMANDS="$test_tmp/run commands"
+rm -f "$test_tmp/launched"
+check 'run launches read-only declaration with --write and exact brief commands' run 0 run "$repo" "$test_tmp/run commands"
+check 'run prints only the job id' test "$(cat "$test_tmp/output")" = task-test-123
+check 'run fixture is a real ignored git worktree' git -C "$repo" check-ignore -q .codex-runs/x
+rm -f "$test_tmp/launched"
+check 'refused command file never launches' run 1 run "$repo" "$test_tmp/refused commands"
+check 'refused run reports lint failure' contains '^FAIL line 5: refused command or path$'
+check 'refused run never reaches the companion' test ! -e "$test_tmp/launched"
+rm -f "$test_tmp/launched"
+check 'run refuses command file naming another repo' run 1 run "$repo" "$test_tmp/mismatched repo commands"
+check 'repo mismatch is explicit' contains '^FAIL repo: command file repo does not match requested repo'
+check 'repo mismatch never reaches the companion' test ! -e "$test_tmp/launched"
+rm -f "$test_tmp/launched"
+check 'run refuses repo without ignored .codex-runs' run 1 run "$other_repo" "$test_tmp/unignored commands"
+check 'ignore failure names .codex-runs' contains '^FAIL ignore: .codex-runs/ is not git-ignored in '
+check 'unignored run never reaches the companion' test ! -e "$test_tmp/launched"
+unset FAKE_RUN FAKE_COMMANDS
+
 reset_polls
+# --- model and effort policy: only gpt-6-luna and gpt-6.1-sol; medium by default; light = low, complex = sol/high ---
+tier_case() { # description, expected model, expected effort, then the runner arguments
+  local d="$1"; export FAKE_MODEL="$2" FAKE_EFFORT="$3"; shift 3
+  rm -f "$test_tmp/launched"
+  check "$d" run 0 "$@"
+  check "$d: reached the companion" test -e "$test_tmp/launched"
+  unset FAKE_MODEL FAKE_EFFORT
+}
+tier_case 'default is luna/medium' gpt-6-luna medium start "$repo" "$test_tmp/brief file"
+tier_case '--tier light is luna/low' gpt-6-luna low --tier light start "$repo" "$test_tmp/brief file"
+tier_case '--tier standard is luna/medium' gpt-6-luna medium --tier standard start "$repo" "$test_tmp/brief file"
+tier_case '--tier complex is sol/high' gpt-6.1-sol high --tier complex start "$repo" "$test_tmp/brief file"
+tier_case 'explicit --model/--effort xhigh' gpt-6.1-sol xhigh --model gpt-6.1-sol --effort xhigh start "$repo" "$test_tmp/brief file"
+tier_case 'flags work after the command too' gpt-6-luna low start "$repo" "$test_tmp/brief file" --effort low
+tier_case 'resume carries model and effort' gpt-6.1-sol high --tier complex resume "$repo" "$test_tmp/answer file"
+export ENTRY_SE_EFFORT=high
+tier_case 'ENTRY_SE_EFFORT sets the default' gpt-6-luna high start "$repo" "$test_tmp/brief file"
+unset ENTRY_SE_EFFORT
+for bad in "--model gpt-5.5" "--model spark" "--effort max" "--effort none" "--tier bogus"; do
+  rm -f "$test_tmp/launched"
+  # shellcheck disable=SC2086
+  check "rejects $bad" run 2 $bad start "$repo" "$test_tmp/brief file"
+  check "$bad never reaches the companion" test ! -e "$test_tmp/launched"
+done
+
 export FAKE_STATES=queued,running,completed
 check 'wait polls queued and running until completed' run 0 wait task-test-123 --max 5
 check 'wait reports completed' contains '^OK wait: task-test-123 completed$'
@@ -129,7 +235,7 @@ check 'zero ceiling returns immediately for active job' run 3 wait task-test-123
 export ENTRY_SE_POLL=0.05
 unset FAKE_STATES
 
-for verdict in DONE NEEDS-INPUT BLOCKED; do
+for verdict in DONE PARTIAL NEEDS-INPUT BLOCKED; do
   printf 'Summary\nRESULT: %s\nTASK: Product #61\nCodex session ID: thread-id\nResume in Codex: codex resume thread-id\n' "$verdict" > "$test_tmp/result"
   check "result prints $verdict reply" run 0 result task-test-123
   check "result appends $verdict parse after companion footer" test "$(tail -n 1 "$test_tmp/output")" = "RESULT: $verdict"
@@ -141,6 +247,109 @@ check 'result last marker is NEEDS-INPUT' test "$(tail -n 1 "$test_tmp/output")"
 printf 'No final return block\nExample RESULT: DONE\nRESULT: DONE | NEEDS-INPUT | BLOCKED\n' > "$test_tmp/result"
 check 'result missing block exits zero' run 0 result task-test-123
 check 'result missing block prints SKIP' contains '^SKIP result: no return block$'
+
+cat > "$test_tmp/result commands" <<COMMANDS
+id: result-1
+repo: $repo
+mode: write
+question: check the result verifier
+printf '%s\\n' 'run-one'
+COMMANDS
+cat > "$test_tmp/result" <<'RESULT'
+RESULT: DONE
+RUN: result-1
+LOG: .codex-runs/task-test-123.log
+CMD 1: printf '%s\n' 'run-one' -> exit 1 (0.1s)
+VERDICT: all passed
+KEY LINES:
+  none
+NOT RUN: none
+RESULT
+check 'passed verdict with non-zero CMD exit is rejected' run 1 result task-test-123 --commands "$test_tmp/result commands"
+check 'verdict mismatch is explicit' contains '^FAIL VERDICT: says passed while a command exited non-zero$'
+
+cat > "$test_tmp/result" <<'RESULT'
+RESULT: DONE
+RUN: result-1
+LOG: .codex-runs/task-test-123.log
+CMD 1: printf '%s\n' 'run-one' -> exit 0 (0.1s)
+CMD 2: echo improvised -> exit 0 (0.1s)
+VERDICT: all passed
+KEY LINES:
+  none
+NOT RUN: none
+RESULT
+check 'extra improvised CMD is rejected' run 1 result task-test-123 --commands "$test_tmp/result commands"
+check 'extra CMD count is explicit' contains '^FAIL CMD: reported 2 commands; command file has 1$'
+
+cat > "$test_tmp/result" <<'RESULT'
+RESULT: DONE
+RUN: result-1
+LOG: .codex-runs/task-test-123.log
+CMD 1: echo improvised -> exit 0 (0.1s)
+VERDICT: all passed
+KEY LINES:
+  none
+NOT RUN: none
+RESULT
+check 'improvised CMD text is rejected at matching count' run 1 result task-test-123 --commands "$test_tmp/result commands"
+check 'improvised command text is explicit' contains '^FAIL CMD: command text is not the command file command in that position$'
+
+cat > "$test_tmp/result" <<'RESULT'
+RESULT: DONE
+RUN: result-1
+CMD 1: printf '%s\n' 'run-one' -> exit 0 (0.1s)
+VERDICT: all passed
+KEY LINES:
+  none
+NOT RUN: none
+RESULT
+check 'run verifier requires a LOG line' run 1 result task-test-123 --commands "$test_tmp/result commands"
+check 'missing LOG is explicit' contains '^FAIL LOG: missing LOG line$'
+
+cat > "$test_tmp/result" <<'RESULT'
+RUN: result-1
+LOG: .codex-runs/task-test-123.log
+CMD 1: printf '%s\n' 'run-one' -> exit 0 (0.1s)
+VERDICT: all passed
+KEY LINES:
+  none
+NOT RUN: none
+RESULT
+check 'run verifier requires a RESULT line' run 1 result task-test-123 --commands "$test_tmp/result commands"
+check 'missing RESULT is explicit' contains '^FAIL RESULT: missing RESULT line$'
+
+cat > "$test_tmp/read-only result commands" <<COMMANDS
+id: result-2
+repo: $repo
+mode: read-only
+question: check for forbidden writes
+printf '%s\\n' 'run-one'
+COMMANDS
+cat > "$test_tmp/result" <<'RESULT'
+RESULT: DONE
+RUN: result-2
+LOG: .codex-runs/task-test-123.log
+CMD 1: printf '%s\n' 'run-one' -> exit 0 (0.1s)
+VERDICT: all passed
+KEY LINES:
+  none
+NOT RUN: none
+RESULT
+printf 'stray\n' > "$repo/stray-file"
+check 'read-only result detects a changed path outside .codex-runs' run 1 result task-test-123 --commands "$test_tmp/read-only result commands"
+check 'read-only violation names the changed path' contains '^FAIL violation: changed outside .codex-runs/: .*stray-file'
+
+# --- read-only check compares with the snapshot taken at launch: an already dirty repo is not a violation ---
+export FAKE_RUN=1 FAKE_COMMANDS="$test_tmp/run commands"
+check 'relaunch on a repo that is already dirty (stray-file present)' run 0 run "$repo" "$test_tmp/run commands"
+unset FAKE_RUN FAKE_COMMANDS
+check 'dirty repo, nothing changed since launch: no violation' run 0 result task-test-123 --commands "$test_tmp/read-only result commands"
+check 'no violation line is printed' bash -c '! grep -q "^FAIL violation" "$0"' "$test_tmp/output"
+printf 'more\n' >> "$repo/stray-file"
+check 'editing an already dirty file after launch is a violation' run 1 result task-test-123 --commands "$test_tmp/read-only result commands"
+check 'the edited file is named' contains '^FAIL violation: changed outside .codex-runs/: .*stray-file'
+rm -f "$repo/stray-file"
 
 export FAKE_BAD_JSON=1
 check 'start refuses malformed listing' run 1 start "$repo" "$test_tmp/brief file"

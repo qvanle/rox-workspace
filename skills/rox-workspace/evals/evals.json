@@ -169,6 +169,76 @@
       "prompt": "/rox-workspace:bootstrap jr-se entry-se",
       "expected_output": "Both kept (two executors); relay mode; engineering tasks go to the Haiku subagent or the Codex job as chosen",
       "files": []
+    },
+    {
+      "id": 25,
+      "name": "run-passing-suite",
+      "prompt": "(sr-se) run the commit skill test suite and tell me only what fails, via run mode",
+      "expected_output": "Writes a command file; run-lint passes; entry-se-run.sh run launches with --write from the repo; result verified; verdict 'all passed', exit 0, log path present",
+      "files": []
+    },
+    {
+      "id": 26,
+      "name": "run-failing-command",
+      "prompt": "(run mode) one listed command fails",
+      "expected_output": "Verdict names the failure, the failing lines are in KEY LINES, the CMD exit is non-zero; the relay opens the log at the failing line",
+      "files": []
+    },
+    {
+      "id": 27,
+      "name": "run-refused-word",
+      "prompt": "(run mode) command file contains git push",
+      "expected_output": "run-lint.sh refuses before launch; nothing is sent to Codex",
+      "files": []
+    },
+    {
+      "id": 28,
+      "name": "run-passed-but-nonzero",
+      "prompt": "(run mode) the block says all passed but a CMD exit is non-zero",
+      "expected_output": "run-verify.sh fails the job; the relay treats it as failed",
+      "files": []
+    },
+    {
+      "id": 29,
+      "name": "run-improvised-command",
+      "prompt": "(run mode) Codex ran an extra command that is not in the file",
+      "expected_output": "run-verify.sh reports the extra CMD; the result is not trusted",
+      "files": []
+    },
+    {
+      "id": 30,
+      "name": "run-readonly-violation",
+      "prompt": "(run mode, read-only) a file changed outside .codex-runs/",
+      "expected_output": "result --commands reports 'FAIL violation: changed outside .codex-runs/'",
+      "files": []
+    },
+    {
+      "id": 31,
+      "name": "run-codex-unavailable",
+      "prompt": "(run mode) Codex returns an auth or quota error",
+      "expected_output": "Says the delegation was skipped and runs the read-only commands inline",
+      "files": []
+    },
+    {
+      "id": 32,
+      "name": "run-qc-evidence",
+      "prompt": "(qc) use run mode to execute a task's test plan",
+      "expected_output": "Evidence is recorded per R-id only after the relay re-runs one command itself",
+      "files": []
+    },
+    {
+      "id": 33,
+      "name": "qc-subagent",
+      "prompt": "/rox-workspace:bootstrap qc, then: verify task 61",
+      "expected_output": "Relay builds the brief from qc-brief.md without the executor's report, dispatches rox-workspace:qc, the agent runs the plan itself and returns PASS or FAIL, the relay re-runs one command and then moves the task",
+      "files": []
+    },
+    {
+      "id": 34,
+      "name": "qc-brief-independence",
+      "prompt": "(qc subagent) the relay is about to paste the executor's TESTS list into the brief",
+      "expected_output": "Refuses: the brief is rebuilt with the requirement, spec and commit only",
+      "files": []
     }
   ]
 }

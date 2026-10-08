@@ -36,6 +36,8 @@ Each skill is a short `SKILL.md`. Where a step is deterministic (counting, check
 ## Roles
 
 `/rox-workspace:bootstrap [role...] [--domain product]` loads one or more roles, runs the preflight, prints the role's starting view and a role card.
+
+Other commands: `build <task-id>` (pick executor, dispatch, move to Review), `verify <task-id>` (independent qc, Done or back), `collect "<q>"` (read-only fan-out), `run <file>` (Codex runs a command file), `status`, `role [role...]`, `interview [topic]` (draft requirement).
 With no argument it asks. Roles are advisory: an action another role owns makes the agent warn and ask; nothing is blocked.
 
 | Role | Mission | Executes |
@@ -48,13 +50,26 @@ With no argument it asks. Roles are advisory: an action another role owns makes 
 | `entry-se` | The same duties as `jr-se` | Codex job, on OpenAI credit |
 | `sa` | Deploy, cluster, secrets, runbooks | inline |
 | `qa` | Make it testable before the build: criteria and test plan | inline |
-| `qc` | Prove it works after the build: verify, move to Done | inline |
+| `qc` | Prove it works after the build: verify, move to Done | Sonnet subagent with a fresh context (inline on request) |
 
 **Collect work.** Read-only gathering (search, read, list, probe, summarise, check claims) is broken down and delegated to `jr-se` (for `roxctl` reads)
 and `entry-se` (for files and code, Codex read-only). See `skills/rox-workspace/domains/product/roles/collect.md`.
 
 **Choosing who builds.** `sr-se` picks `exec:sr`, `exec:jr` or `exec:entry` for a ready task: unclear, risky or infra work stays with `sr-se` (or `sa`),
 tool-heavy small tasks go to `jr-se`, precise self-contained code changes go to `entry-se`. The table is in the product domain spec.
+
+## Codex model and effort
+
+`entry-se-run.sh` passes `--model` and `--effort` to every Codex job. Only two models are used: `gpt-6-luna` and `gpt-6.1-sol`. Effort is `medium` by default
+(overriding the `xhigh` in `~/.codex/config.toml`), `low` for simple work, `high` or `xhigh` for complex work. `--tier` is a shortcut:
+
+| `--tier` | Model | Effort | Use for |
+| --- | --- | --- | --- |
+| `light` | `gpt-6-luna` | `low` | Simple reads, short command runs, commit messages |
+| `standard` (default) | `gpt-6-luna` | `medium` | Builds from a clear spec |
+| `complex` | `gpt-6.1-sol` | `high` | Reviews of large diffs, tricky logic; ask for `--effort xhigh` explicitly for the hardest |
+
+Defaults can be set with `ENTRY_SE_MODEL` and `ENTRY_SE_EFFORT`; any other model or effort is refused before launch.
 
 ## Safety rules the plugin carries
 
@@ -70,7 +85,8 @@ tool-heavy small tasks go to `jr-se`, precise self-contained code changes go to 
 ```text
 .claude-plugin/        plugin.json, marketplace.json
 commands/bootstrap.md  /rox-workspace:bootstrap
-agents/jr-se.md        the Haiku subagent
+commands/{build,verify,collect,run,status,role,interview}.md  /rox-workspace:<name>
+agents/jr-se.md        the Haiku subagent; agents/qc.md the verification subagent
 hooks/hooks.json       the push guard
 skills/<name>/         SKILL.md, scripts/, references/, templates/, evals/, tests/
 skills/rox-workspace/domains/product/   structure, templates, examples and the nine role files

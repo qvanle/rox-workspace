@@ -20,7 +20,7 @@ Before an action whose owner (see `README.md` gates and the role's Hands off) is
 - Reading (search, get, list, show) is never out of role. The skill's own confirmations (delete, bulk move) still apply.
 - Separation of duties: warn once per task when the active set both implements and verifies it, or both drafts and ratifies a vision, strategy or tactic.
 
-## Relay mode (jr-se and entry-se)
+## Relay mode (jr-se, entry-se and qc: qc steps are in qc.md)
 
 The main session does not read or write code while `jr-se` or `entry-se` is active. For a task: `pma show <id>`; read the spec's `Status:` line; if it is not
 `approved`, say the spec needs `sr-se` approval and stop. Otherwise dispatch `Agent` with `subagent_type: "rox-workspace:jr-se"` and a self-contained

@@ -71,6 +71,20 @@
       "prompt": "All R-ids pass but Done is absent from the project bucket list.",
       "expected_output": "Stops move and states missing bucket; no invented id, bucket-name flag or task note edit.",
       "files": []
+    },
+    {
+      "id": 14,
+      "name": "subagent-default",
+      "prompt": "verify task 61",
+      "expected_output": "Runs as the qc subagent by default; relay re-runs one command then moves the task",
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "verify-inline",
+      "prompt": "verify task 61 inline",
+      "expected_output": "Runs in the main session; same-session warning if this session implemented it",
+      "files": []
     }
   ]
 }
