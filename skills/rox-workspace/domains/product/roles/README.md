@@ -7,7 +7,7 @@ Gates (who may do what) are advisory; the gate tables are in `docs/specs/rox-wor
 | --- | --- | --- | --- | --- | --- | --- |
 | `po` | product-owner | Product owner | Decide why and what: outcomes, priorities, acceptance | inline | inherit | `po.md` |
 | `pm` | project-manager | Project manager | Keep the cadence: refinement flow, cycles, carry-over | inline | inherit | `pm.md` |
-| `des` | designer | Designer | Decide how it looks and flows, before it is built | inline | inherit | `des.md` |
+| `des` | designer, ui, ux, ui-ux | UI/UX designer | Decide how it looks and flows (UI and UX), before it is built | inline | inherit | `des.md` |
 | `sr-se` | senior, senior-engineer | Senior software engineer | Decide how it is built: specs, technical decisions, review | inline | inherit | `se.md` (tier sr) |
 | `jr-se` | junior, junior-engineer | Junior software engineer | Build one task against an approved spec | subagent | haiku | `se.md` (tier jr) |
 | `entry-se` | entry | Entry-level software engineer | Same duties as jr-se; executed by Codex | codex | Codex | `se.md` (tier entry) |
