@@ -1,0 +1,69 @@
+{
+  "skill_name": "rox-workspace",
+  "evals": [
+    {
+      "id": 1,
+      "name": "tactic-doc-create",
+      "prompt": "write down a tactic in the wiki for adding an audit log of who changed what in workflows. it runs about two months starting next monday",
+      "expected_output": "Searches first, then creates `Tactic: <name>` with a level: tactical header that realizes a pillar/strategy, Markdown body, --start/--end given, through roxctl; the body is visually rich (callouts, tables, emoji headings, checklists)",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "plan-sprint",
+      "prompt": "plan the sprint starting monday 12 oct, one week, goal: owners can see each workflow step. take tasks 42 and 43 from the backlog",
+      "expected_output": "Cycle doc Cycles/261012-<name> with start/end, sprint project of the same name under Product, buckets, tasks 42 and 43 moved in, ids listed in the cycle doc Scope; tasks that lack type, size or area labels get them",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "daily-stale-check",
+      "prompt": "daily check: what is stale in the wiki?",
+      "expected_output": "Preflight, one `wiki stale` call, a table of the stale documents with reasons, an offer to create review tasks; no documents fetched one by one",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "close-cycle",
+      "prompt": "close last sprint (260928-trace-capture): only task 45 shipped. retro: keep daily notes, change to smaller tasks, drop standups",
+      "expected_output": "Reads the cycle doc before updating, writes Outcome and Retro, sets status closed, moves unfinished tasks out and archives the sprint project",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "preflight-fail-no-ol",
+      "prompt": "record a decision in the wiki: we store workflow traces in postgres and expire them after 90 days",
+      "expected_output": "With ol missing: reports the missing tool and the fix and stops; no browser, no raw ol, no local file as a substitute",
+      "files": [],
+      "env": "no-ol"
+    },
+    {
+      "id": 6,
+      "name": "delete-confirm",
+      "prompt": "delete the old Platform Architecture doc",
+      "expected_output": "Does not delete; asks the user to confirm by name and offers archive",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "find-decision",
+      "prompt": "what did we decide about storing workflow traces?",
+      "expected_output": "Search only (and at most a get); says plainly that no decision was found; writes nothing",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "requirement-task",
+      "prompt": "customers should be able to pay by card. write that up as a task for the backlog, medium size, it touches billing and the portal",
+      "expected_output": "Requirement task in Backlog: HTML note with numbered R1.., acceptance, out of scope; 4 or more colourful labels that describe the task; a new label created (with a colour) for an idea no existing label covers; no --force-create; note not Markdown",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "specify-task",
+      "prompt": "write the spec for task 46 and start on it",
+      "expected_output": "Reads task 46, moves it to Specifying, writes docs/specs/<YYMMDD-name>.md in the code repo (not the wiki) with Requirement: and R-ids using the spec-writing skill or the fallback template, and does NOT edit the task's note or title",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+<!-- ILLUSTRATIVE. Task #42 in the sprint project 261012-trace-viewer. Title: "Owners can see each step input and output".
+     Labels: feature, size:M, area:portal, area:workflows, needs-design. -->
+<h2>Context</h2>
+<p>Owners can see that a run finished but not what each step received and returned, so they cannot tell why a result is wrong.
+Serves <a href="WIKI_URL">Tactic: Execution Trace</a>, outcome "O1"; sprint
+<a href="WIKI_URL">Cycles/261012-trace-viewer</a>.</p>
+<h2>Requirements</h2>
+<ol>
+  <li><strong>R1</strong> A finished run lists its steps in execution order, each with its status.</li>
+  <li><strong>R2</strong> Selecting a step shows the input it received and the output it produced.</li>
+  <li><strong>R3</strong> A payload over 64 KB is truncated and the view says so.</li>
+</ol>
+<h2>Acceptance criteria</h2>
+<ul>
+  <li>Given a finished 3-step run, when the owner opens it, then 3 steps appear in order with their statuses.</li>
+  <li>Given a step with a 100 KB output, when the owner selects it, then 64 KB is shown with a truncation notice.</li>
+</ul>
+<h2>Out of scope</h2>
+<ul>
+  <li>Editing a workflow from the trace view; runs that are still in progress.</li>
+</ul>
