@@ -1,0 +1,21 @@
+# Ambient L4 only. Review explicit caller namespaces with sa; all callers must be enrolled.
+# Production azp checks are an application/waypoint follow-up, not L4 ztunnel fields.
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-callers
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+spec:
+  selector:
+    matchLabels:
+      app: <service>
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces:
+              - <service>-staging
+              - iap-staging
+              - monitoring
+              - <additional-caller-namespace>

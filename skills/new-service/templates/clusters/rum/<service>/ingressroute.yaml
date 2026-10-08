@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: <service>
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+spec:
+  entryPoints: [websecure]
+  routes:
+    - kind: Rule
+      match: Host(`<production-host>.rotexai.com`)
+      services:
+        - name: <service>
+          port: 80
+  tls:
+    secretName: <service>-tls

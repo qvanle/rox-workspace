@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: <service>
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+# For stateful kind: replace deployment.yaml with statefulset.yaml (controller claims),
+# or add pvc.yaml and mount the claim in the Deployment. Never select both workloads.
+configMapGenerator:
+  - name: <service>-config
+    envs:
+      - configmap.env
+generatorOptions:
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+labels:
+  - pairs:
+      app: <service>
+      part-of: rotexai
+    includeSelectors: true

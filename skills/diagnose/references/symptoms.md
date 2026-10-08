@@ -1,0 +1,31 @@
+# Known symptoms
+
+Paths verified on 2026-10-09 against the aos checkout. All paths below are relative to `AOS_ROOT`; the test defaults to `/Users/qvanle/projects/personal/rotexai/v3.0.0/aos`. A row is a hypothesis until its probe supplies evidence. Check headers and tasks before execution.
+
+| Symptom | Likely cause | First probe | Fix |
+| --- | --- | --- | --- |
+| Portal opens but JavaScript bundles hang or stall | Asset-stall incident: ingress or hop loss | `IaC/playbooks/hotfixes/incidents/01-route-check.yml` first; then `IaC/playbooks/hotfixes/incidents/02-portal-asset-stall.yml`; `IaC/playbooks/hotfixes/incidents/04-hop-loss-measure.yml` | Per the playbook's report |
+| Ingress stalls or intermittent upstream errors | Edge node or ingress path | `IaC/playbooks/hotfixes/incidents/03-ingress-stall-diagnose.yml`; `IaC/playbooks/immutable/diagnostics/general/edge-node-health-check.yml` | Per the report |
+| A service answers 502 after a node reboot | Ambient mesh pods not adopted | `IaC/playbooks/hotfixes/incidents/05-ambient-inbound-diagnose.yml`; `IaC/playbooks/immutable/diagnostics/general/istio-ambient-preflight.yml` | `IaC/playbooks/hotfixes/maintenance/repair-ambient-inbound.yml` recreates affected pods; restarting ztunnel alone is not enough; user types ROLL AMBIENT PODS |
+| Argo application `OutOfSync` with a failing hook Job | Hook Job holding a stale digest | `roxctl platform cd app show <app>`; `IaC/playbooks/immutable/diagnostics/general/argocd-diagnostics.yml` | `IaC/playbooks/hotfixes/maintenance/force-resync-app.yml` `-e target_app=<app>` after force confirmation |
+| Argo cannot read the repo | Repo auth or source URL | Prefer `roxctl platform cd repo check`; `IaC/playbooks/immutable/diagnostics/general/argocd-repo-auth-check.yml`; `IaC/playbooks/immutable/diagnostics/general/argocd-repository-list.yml`; `IaC/playbooks/immutable/diagnostics/general/argocd-github-source-check.yml` | Fix the repo credential in the owning role |
+| Pods pending | Scheduling or node pressure | `IaC/playbooks/immutable/diagnostics/general/kube-pending-pod-check.yml`; `IaC/playbooks/immutable/diagnostics/general/node-memory-probe.yml` | Per the report |
+| Pods evicted | Memory pressure or the descheduler | `roxctl platform kube eviction list`; `IaC/playbooks/immutable/diagnostics/general/node-memory-probe.yml` | Right-size resources; descheduler annotation for pipeline pods |
+| Orphaned pods or leftovers after a removal | GitOps leftovers | `IaC/playbooks/immutable/diagnostics/general/gitops-leftovers.yml`; `IaC/playbooks/immutable/diagnostics/general/orphan-pod-check.yml` | `IaC/playbooks/hotfixes/clean/gitops-leftovers.yml` with live preview and user-typed DELETE ORPHANS |
+| CI pipelines missing, cancelled or timing out | Woodpecker repo state, eviction or upstream clone flakiness | `roxctl platform ci pipeline` (resolve subcommand with --help); `IaC/playbooks/immutable/diagnostics/general/woodpecker-diagnostics.yml`; `IaC/playbooks/immutable/diagnostics/general/woodpecker-oom-diagnose.yml`; `IaC/playbooks/immutable/diagnostics/general/woodpecker-secrets-db-probe.yml` | Use `rox-workspace:ship` trap table; re-run confirmed clone timeouts only after write approval |
+| Registry push or pull failing | Zot auth, node pull credentials or node IP drift | `roxctl platform registry server check` first; `IaC/playbooks/immutable/diagnostics/general/registry-push-probe.yml` is Write (pods/blob uploads), ask first | `IaC/playbooks/immutable/cicd/registry-nodes.yml` after checking the registry node address |
+| Agent responses stall | Agent server or Redis | `IaC/playbooks/immutable/diagnostics/general/agent-server-stall-probe.yml`; `IaC/playbooks/immutable/diagnostics/general/agent-redis-probe.yml`; `IaC/playbooks/immutable/diagnostics/general/agent-server-log-tail.yml` | Per the report |
+| Auth outage | Keycloak or its database | `IaC/playbooks/immutable/diagnostics/general/auth-outage-diagnose.yml` | Per the report |
+| Metrics or dashboards missing | Monitoring config drift | `IaC/playbooks/immutable/diagnostics/general/monitoring-stack-probe.yml`; `IaC/playbooks/immutable/diagnostics/general/monitoring-config-sync-check.yml`; `IaC/playbooks/immutable/diagnostics/general/metrics-endpoint-check.yml` | Re-sync monitoring config through the owning tracked role/playbook after write approval |
+
+## Path and tier reconciliation
+
+- No named starter playbook basename was missing or renamed. Bare filenames and `diagnostics/general/` are expanded to `IaC/playbooks/immutable/diagnostics/general/`; incident names use `IaC/playbooks/hotfixes/incidents/`; `cicd/registry-nodes.yml` uses the immutable cicd directory.
+- `woodpecker-*` is made concrete as the three existing diagnostics listed above; `registry-push-probe` gains its `.yml` extension and full path.
+- `gitops-leftovers.yml` is ambiguous: the immutable general diagnostic is strictly read-only; the hotfix clean playbook deletes namespaces including PVCs, recomputes live candidates and requires DELETE ORPHANS. Never use a saved report as deletion input.
+- The ambient row adds the existing tracked repair named by the incident header; it restarts affected workloads and can briefly interrupt single replicas. The user supplies ROLL AMBIENT PODS; the skill never supplies confirmation variables.
+- Registry push diagnostics are not read-only: they create temporary pods, push blobs and may write temporary R2 objects. Read-only server checks come first, then write approval for the probe. Directory names are not action-tier evidence.
+- Repo auth diagnostics name `roxctl platform cd repo check` as the preferred native entry point; tracked Ansible remains available after reading its header.
+- The generic probe syntax in the spec omits some argument details: inspect local roxctl `--help` before execution, particularly CI pipeline, kube event window and observation subcommands.
+
+Keep rows with owning playbooks when names change. Link a wiki incident page only when a verified link is available; never copy it or invent one. New logic goes into the owning role/playbook, not a new file or opt-in flag. Existing reports are loaded only when named by the user; newly generated reports are evidence for the current diagnosis.

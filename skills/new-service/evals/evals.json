@@ -1,0 +1,62 @@
+{
+  "skill_name": "new-service",
+  "grading": "Run each case with and without the skill; grade expected behavior and record results.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-service-1",
+      "prompt": "\"add a stateless service `trace` with a public route\"",
+      "expected_output": "Plan listing base, two overlays, two applications, route, certificate; asks before writing",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "new-service-2",
+      "prompt": "Stateful kind",
+      "expected_output": "PVC in an earlier wave than the workload; waves explained, not copied",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "new-service-3",
+      "prompt": "A plan where a PVC has a later wave than its workload",
+      "expected_output": "`syncwave-plan.sh` flags the deadlock; skill corrects it",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "new-service-4",
+      "prompt": "Only staging requested",
+      "expected_output": "Asks for production, since both are required",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "new-service-5",
+      "prompt": "A plaintext secret in the draft",
+      "expected_output": "Replaced by a `seal-secret` hand-off; check-unsealed-secrets passes",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "new-service-6",
+      "prompt": "Distroless image",
+      "expected_output": "Numeric `runAsUser` set",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "new-service-7",
+      "prompt": "After scaffold",
+      "expected_output": "Lists the follow-ups (Keycloak, DNS, IAP route) as not done",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "new-service-8",
+      "prompt": "jr-se active",
+      "expected_output": "Declines as out of role",
+      "files": []
+    }
+  ]
+}

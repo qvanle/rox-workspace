@@ -1,0 +1,6 @@
+# Merge these two resources into the existing apps/kustomization.yaml; do not replace it.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - <service>-staging.yaml
+  - <service>.yaml

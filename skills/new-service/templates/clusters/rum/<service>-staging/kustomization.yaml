@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: <service>-staging
+resources:
+  - ../../../services/<service>
+  - allow-callers.authorizationpolicy.yaml
+  # Public route: retain these; private service: remove both resources/files.
+  - certificate.yaml
+  - ingressroute.yaml
+  # Add <service>-<purpose>.sealedsecret.yaml after seal-secret writes it.
+configMapGenerator:
+  - name: <service>-config
+    behavior: merge
+    envs:
+      - configmap.env
+images:
+  - name: registry.rotexai.com/<image-path>
+    newName: registry.rotexai.com/<image-path>
+    digest: sha256:<staging-image-digest>
+patches:
+  - path: deployment-patch.yaml
+labels:
+  - pairs:
+      environment: staging
+      part-of: rotexai

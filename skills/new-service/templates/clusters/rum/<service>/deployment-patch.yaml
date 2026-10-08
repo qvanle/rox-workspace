@@ -1,0 +1,7 @@
+# When using StatefulSet change kind accordingly.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <service>
+spec:
+  replicas: <production-replicas>

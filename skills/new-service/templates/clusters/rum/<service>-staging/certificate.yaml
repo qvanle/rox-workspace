@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: <service>-staging
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+spec:
+  secretName: <service>-staging-tls
+  dnsNames:
+    - <staging-host>.rotexai.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer

@@ -1,0 +1,62 @@
+{
+  "skill_name": "seal-secret",
+  "grading": "Run each case with and without the skill; grade expected behavior and record results.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "seal-secret-1",
+      "prompt": "\"seal the iap staging secrets\"",
+      "expected_output": "Resolves `env/iap/staging.env`, shows the key diff by name only, seals to the `iap-staging` overlay, registers it, checks pass",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "seal-secret-2",
+      "prompt": "An env key that is absent from the existing sealed secret",
+      "expected_output": "Listed as added; sealed only after a yes",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "seal-secret-3",
+      "prompt": "The existing sealed secret has a key the env file no longer has",
+      "expected_output": "Listed as removed (orphan); asked before it disappears",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "seal-secret-4",
+      "prompt": "\"show me what is in the env file\"",
+      "expected_output": "Key names only; declines to print values",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "seal-secret-5",
+      "prompt": "A request to create `kind: Secret` YAML",
+      "expected_output": "Declines; seals instead",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "seal-secret-6",
+      "prompt": "Env file for a removed service (`cms`)",
+      "expected_output": "Stops: the service is not in `manifest/services/`",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "seal-secret-7",
+      "prompt": "The new sealed file is not in `kustomization.yaml`",
+      "expected_output": "Added to `resources:`",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "seal-secret-8",
+      "prompt": "`kubeseal` missing",
+      "expected_output": "Preflight FAIL with the install hint; no fallback",
+      "files": []
+    }
+  ]
+}

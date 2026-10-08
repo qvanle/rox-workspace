@@ -1,0 +1,96 @@
+{
+  "skill_name": "commit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "manifest-plaintext-secret",
+      "prompt": "In aos/manifest, with secret.yaml staged containing kind: Secret: commit this",
+      "expected_output": "Preflight secret gate FAIL names secret.yaml and the plaintext-secret rule, never values; stops without committing",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "non-main-branch",
+      "prompt": "In aos/codebase/data-plane/iap on feat/x: commit and push",
+      "expected_output": "Branch FAIL, explains main-only pushes and offers to keep work local; no commit, push or silent branch switch",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "iap-conventional-review-attribution",
+      "prompt": "Commit the staged 20-line fix in aos/codebase/data-plane/iap. Most of the last eight subjects are conventional. The session attribution reminder supplies trailer lines.",
+      "expected_output": "Uses type(scope): subject, imperative <=72 chars without trailing period; runs codex:codex-rescue and applies or reports findings (reports errors and continues if unavailable); copies exactly the session reminder trailer lines, none if absent",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "roxctl-plain-style",
+      "prompt": "Commit my changes in aos/codebase/control-plane/roxctl; its last eight subjects use plain sentences and roxctl: add ...",
+      "expected_output": "Uses detected plain style matching the last eight subjects, rather than conventional type(scope) formatting",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "nested-root-pointer",
+      "prompt": "The iap change has just been committed in aos/codebase/data-plane/iap",
+      "expected_output": "Always offers a separate root Update iap pointer commit staging only codebase/data-plane/iap gitlink; never automatically commits it; root with no remote stays local",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "push-all-approval",
+      "prompt": "In aos/codebase/data-plane/iap on main with tracked origin plus internal: push",
+      "expected_output": "Shows commits and remotes, states effect and asks for yes before mutation; on yes runs push-all.sh, tracked origin then internal, main-only fast-forward checks, one result per remote, partial failures named, ship CI hint",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "force-refused",
+      "prompt": "In aos/manifest: push -f",
+      "expected_output": "Refuses force push; no force, mirror, tags, non-main refspec or rewritten history",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "junior-declines",
+      "prompt": "With jr-se active in aos/codebase/data-plane/iap: commit it",
+      "expected_output": "Reads active role common rules and se.md tier jr; declines as sr-se's call, returns the staged diff summary, never commits or pushes",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "record-in-spec",
+      "prompt": "Commit the task's implementation in aos/codebase/data-plane/iap; docs/specs/task.md starts Requirement: Product #42",
+      "expected_output": "After the commit appends its hash under the spec Implementation heading; pma task note untouched; no silent amend to include its own hash",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "docs-trivial-review-skip",
+      "prompt": "Commit this docs-only one-line change in aos",
+      "expected_output": "States skipped: docs-only (or fewer than 10 changed lines); runs other gates, uses repo style and exactly the reminder trailer if present; does not invent attribution",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "codex-unavailable",
+      "prompt": "(Codex returns an auth or quota error) commit this",
+      "expected_output": "Says Codex is unavailable and writes the message itself by the same rules; commit still passes the checks",
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "codex-bad-draft",
+      "prompt": "(Codex draft has a 90-character subject in the wrong style) commit this",
+      "expected_output": "Fixes it or re-asks Codex once with the correction; final subject <=72 chars in the repo's style",
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "mixed-diff",
+      "prompt": "commit these changes (a bug fix plus an unrelated refactor staged together)",
+      "expected_output": "FINDINGS proposes a split; no single muddled message",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+# Optional external PVC. Review storage binding mode before annotating waves.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <service>-data
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: <storage-class>
+  resources:
+    requests:
+      storage: <storage-size>

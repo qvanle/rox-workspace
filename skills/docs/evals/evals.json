@@ -1,0 +1,76 @@
+{
+  "skill_name": "docs",
+  "evaluation": "Grade each case with and without the skill in isolated fixtures; never use live cluster writes or real secrets.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "document-service",
+      "prompt": "document the be-proxy service",
+      "expected_output": "Searches existing docs and 00-index first; reads actual manifest and source. Adds a new numbered doc only if absent (never 05), with coverage/date and index row, then clean claims table.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "minimal-ci-update",
+      "prompt": "update the CI doc, the registry moved to Zot auth",
+      "expected_output": "Reads current source and 15-cicd.md; edits only affected sections, flags discrepancy, runs claims checker, preserves untouched sections.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "removed-names",
+      "prompt": "Check a doc mentioning `jwt-validator` and AFFiNE.",
+      "expected_output": "Checker warns on both with iap and Outline replacements; historical mentions are explicitly judged rather than automatically deleted.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "verify-existing",
+      "prompt": "are docs 13 and 14 still true?",
+      "expected_output": "Verify mode reads code, manifests and playbooks; returns claim/evidence/verdict table. Fixes only after yes; states unverified runtime claims.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "explain-po",
+      "prompt": "(po active) explain the request lifecycle",
+      "expected_output": "Leads with user outcome and trade-off table, cites evidence after the answer, avoids a technical code walk. Offers repo/wiki/terminal choice after substantial work, saves only on choice.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "explain-engineer",
+      "prompt": "(sr-se active) explain the request lifecycle",
+      "expected_output": "Code walk with file:line for every code reference, boundaries and failure modes, then alternatives rejected; marks unverified claims.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "ambiguous-destination",
+      "prompt": "write that up",
+      "expected_output": "Asks wiki (why/intent/outcome) or repo (how built/run) before writing; does not guess.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "missing-path",
+      "prompt": "Check a draft citing `codebase/backend/no-such-service/main.py`.",
+      "expected_output": "FAIL path: missing with fix; fixes or removes the claim before delivering a draft; no missing-path claim silently retained.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "jr-boundaries",
+      "prompt": "(jr-se active) update docs for my task and commit them",
+      "expected_output": "Only task-scoped doc changes; no commit/push/ship/seal/scaffold; hands commit to sr-se.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "explain-no-role",
+      "prompt": "(no active role) explain how authentication works",
+      "expected_output": "Asks the audience in one line; no role warnings. Does not save automatically.",
+      "files": []
+    }
+  ]
+}

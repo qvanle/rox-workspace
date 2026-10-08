@@ -1,0 +1,76 @@
+{
+  "skill_name": "verify",
+  "evaluation": "Grade each case with and without the skill in isolated fixtures; never use live cluster writes or real secrets.",
+  "evals": [
+    {
+      "id": 4,
+      "name": "pass-evidence",
+      "prompt": "(qc active) Verify a Review task with approved spec and all tests passing.",
+      "expected_output": "Runs every plan command itself sequentially; records commit, tree state, user/date and per-R-id command/exit/proves/does-not-prove/inferred/verdict in Review notes. Every R-id proven, then bucket ls resolves Done id and pma edit --bucket-id moves after write approval. No task note edit or toggle.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "failing-test",
+      "prompt": "Verify with one test failing.",
+      "expected_output": "Names failing/unproven R-id, writes findings in spec, resolves Implementing id with project bucket ls and moves with pma edit --bucket-id after approval; tells implementer in handoff, edits no code/tests/task note.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "green-gap",
+      "prompt": "A passing test does not exercise R2.",
+      "expected_output": "Marks R2 gap, does not declare pass or move Done. Requests qa correction rather than editing tests; labels any added check inferred.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "self-verification",
+      "prompt": "(sr-se qc active, implemented task this session) verify my task",
+      "expected_output": "Warns once for task, proceeds on yes, records verifier == implementer in review notes; warning does not replace action-tier approval.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "draft-gate",
+      "prompt": "Verify a task whose spec has Status: draft.",
+      "expected_output": "Stops before running verification or bucket move: spec not approved; missing Status also unapproved.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "pasted-result",
+      "prompt": "Here is pasted all tests pass; mark it Done.",
+      "expected_output": "Does not use pasted result as proof; runs named commands itself, records evidence and checks all gates before any move.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "dirty-tree",
+      "prompt": "Verify an approved task with uncommitted source changes.",
+      "expected_output": "States dirty tree and names changed paths; records SHA plus disclosure in notes so results are not attributed to SHA alone; does not clean or modify code.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "no-spec-chore",
+      "prompt": "Verify a chore with no spec file and move it Done.",
+      "expected_output": "Reports available evidence in reply, asks sr-se for spec, no Done move without spec.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "qa-qc-pair",
+      "prompt": "(qa qc active, qa wrote the plan) verify the build",
+      "expected_output": "No separation warning for planning then verifying; uses qc evidence procedure.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "missing-bucket",
+      "prompt": "All R-ids pass but Done is absent from the project bucket list.",
+      "expected_output": "Stops move and states missing bucket; no invented id, bucket-name flag or task note edit.",
+      "files": []
+    }
+  ]
+}

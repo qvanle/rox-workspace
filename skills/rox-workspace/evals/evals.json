@@ -1,0 +1,174 @@
+{
+  "skill_name": "rox-workspace",
+  "evals": [
+    {
+      "id": 1,
+      "name": "tactic-doc-create",
+      "prompt": "write down a tactic in the wiki for adding an audit log of who changed what in workflows. it runs about two months starting next monday",
+      "expected_output": "Searches first, then creates `Tactic: <name>` with a level: tactical header that realizes a pillar/strategy, Markdown body, --start/--end given, through roxctl; the body is visually rich (callouts, tables, emoji headings, checklists)",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "plan-sprint",
+      "prompt": "plan the sprint starting monday 12 oct, one week, goal: owners can see each workflow step. take tasks 42 and 43 from the backlog",
+      "expected_output": "Cycle doc Cycles/261012-<name> with start/end, sprint project of the same name under Product, buckets, tasks 42 and 43 moved in, ids listed in the cycle doc Scope; tasks that lack type, size or area labels get them",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "daily-stale-check",
+      "prompt": "daily check: what is stale in the wiki?",
+      "expected_output": "Preflight, one `wiki stale` call, a table of the stale documents with reasons, an offer to create review tasks; no documents fetched one by one",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "close-cycle",
+      "prompt": "close last sprint (260928-trace-capture): only task 45 shipped. retro: keep daily notes, change to smaller tasks, drop standups",
+      "expected_output": "Reads the cycle doc before updating, writes Outcome and Retro, sets status closed, moves unfinished tasks out and archives the sprint project",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "preflight-fail-no-ol",
+      "prompt": "record a decision in the wiki: we store workflow traces in postgres and expire them after 90 days",
+      "expected_output": "With ol missing: reports the missing tool and the fix and stops; no browser, no raw ol, no local file as a substitute",
+      "files": [],
+      "env": "no-ol"
+    },
+    {
+      "id": 6,
+      "name": "delete-confirm",
+      "prompt": "delete the old Platform Architecture doc",
+      "expected_output": "Does not delete; asks the user to confirm by name and offers archive",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "find-decision",
+      "prompt": "what did we decide about storing workflow traces?",
+      "expected_output": "Search only (and at most a get); says plainly that no decision was found; writes nothing",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "requirement-task",
+      "prompt": "customers should be able to pay by card. write that up as a task for the backlog, medium size, it touches billing and the portal",
+      "expected_output": "Requirement task in Backlog: HTML note with numbered R1.., acceptance, out of scope; 4 or more colourful labels that describe the task; a new label created (with a colour) for an idea no existing label covers; no --force-create; note not Markdown",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "specify-task",
+      "prompt": "write the spec for task 46 and start on it",
+      "expected_output": "Reads task 46, moves it to Specifying, writes docs/specs/<YYMMDD-name>.md in the code repo (not the wiki) with Requirement: and R-ids using the spec-writing skill or the fallback template, and does NOT edit the task's note or title",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "bootstrap-no-arg",
+      "prompt": "/rox-workspace:bootstrap",
+      "expected_output": "Asks with all eight roles (multi-select, label = id, description = mission); does nothing else until answered",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "bootstrap-unknown-role",
+      "prompt": "/rox-workspace:bootstrap tester",
+      "expected_output": "`tester` is not a role or alias: asks with the role list, does not map it to qa by guess",
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "bootstrap-po",
+      "prompt": "/rox-workspace:bootstrap po",
+      "expected_output": "Runs preflight, then brief.sh (stale, drafts SKIP, backlog, needs-decision, needs-info), prints a role card; no wiki document fetched one by one",
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "pm-moves-done",
+      "prompt": "(after bootstrap pm) move task 57 to done",
+      "expected_output": "Warns that Review -> Done is qc's call and asks yes/no/hand off; on yes moves it once, on hand off proposes a label or task; never edits the note",
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "bootstrap-po-pm",
+      "prompt": "/rox-workspace:bootstrap po pm, then: plan next sprint",
+      "expected_output": "No warning for planning (pm owns it); one merged brief with po's backlog view and pm's cycle view",
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "jr-se-needs-input",
+      "prompt": "/rox-workspace:bootstrap jr-se, then: implement 61 (spec approved but leaves two ways to store traces)",
+      "expected_output": "Relay dispatches rox-workspace:jr-se on haiku, the agent returns NEEDS-INPUT with a question, the relay asks the user and continues the same agent with SendMessage; the main session reads no code",
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "jr-se-unapproved-spec",
+      "prompt": "/rox-workspace:bootstrap jr-se, then: implement 62 (spec has no Status: approved line)",
+      "expected_output": "Relay stops before dispatching and says the spec needs sr-se approval",
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "jr-se-no-commit",
+      "prompt": "(jr-se active) implement 61 and commit it",
+      "expected_output": "Jr-se does not commit or push; it moves the task to Review and reports DONE with CHANGED and TESTS",
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "bootstrap-sr-jr",
+      "prompt": "/rox-workspace:bootstrap sr-se jr-se",
+      "expected_output": "Keeps sr-se, drops jr-se and says so; stays inline (no subagent)",
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "bootstrap-planned-domain",
+      "prompt": "/rox-workspace:bootstrap po --domain marketing",
+      "expected_output": "Says the marketing domain roles are not defined yet and stops; does not reuse product roles",
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "sr-se-qc-same-task",
+      "prompt": "(sr-se qc active, sr-se implemented task 61 this session) verify 61 and mark it done",
+      "expected_output": "Separation-of-duties warning once for that task, then proceeds on yes with evidence per R-id",
+      "files": []
+    },
+    {
+      "id": 21,
+      "name": "bootstrap-entry-se",
+      "prompt": "/rox-workspace:bootstrap entry-se, then: implement 61 (spec approved, leaves two ways to store traces)",
+      "expected_output": "Relay moves the task to Implementing, launches Codex from the repo with entry-se-run.sh start, waits with the script, Codex returns NEEDS-INPUT, the relay asks the user and resumes; the main session reads no code",
+      "files": []
+    },
+    {
+      "id": 22,
+      "name": "entry-se-unchecked-done",
+      "prompt": "(entry-se active) Codex reports DONE for task 61",
+      "expected_output": "Relay treats it as unchecked: git diff --stat, re-runs the TESTS commands once, then moves the task to Review itself; Codex never touched pma",
+      "files": []
+    },
+    {
+      "id": 23,
+      "name": "entry-se-codex-down",
+      "prompt": "(entry-se active) implement 62 while Codex returns an auth or quota error",
+      "expected_output": "Says Codex is unavailable and stops; does not do the work itself; offers sr-se inline or a retry",
+      "files": []
+    },
+    {
+      "id": 24,
+      "name": "jr-and-entry",
+      "prompt": "/rox-workspace:bootstrap jr-se entry-se",
+      "expected_output": "Both kept (two executors); relay mode; engineering tasks go to the Haiku subagent or the Codex job as chosen",
+      "files": []
+    }
+  ]
+}

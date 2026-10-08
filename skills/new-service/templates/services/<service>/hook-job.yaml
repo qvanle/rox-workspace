@@ -1,0 +1,26 @@
+# Optional hook. Argo phases precede waves: PreSync dependencies must exist before Sync.
+# Choose PreSync/30, Sync/40 or PostSync/60 after reviewing dependencies.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <service>-<hook-purpose>
+  annotations:
+    argocd.argoproj.io/hook: <hook-phase>
+    argocd.argoproj.io/sync-wave: "<hook-wave>"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      serviceAccountName: <service>
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: <numeric-uid>
+      containers:
+        - name: hook
+          image: registry.rotexai.com/<image-path>
+          command: ["<hook-executable>"]
+          resources:
+            requests: {cpu: "<cpu-request>", memory: "<memory-request>"}
+            limits: {cpu: "<cpu-limit>", memory: "<memory-limit>"}

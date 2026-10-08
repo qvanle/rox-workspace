@@ -1,0 +1,62 @@
+{
+  "skill_name": "ship",
+  "grading": "Run each case with and without the skill; grade expected behavior and record results.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "ship-1",
+      "prompt": "Pushed to the tracked remote only",
+      "expected_output": "Checkpoint 1 FAILs; says push `internal` too (via `commit`)",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "ship-2",
+      "prompt": "Pipeline green, staging digest not bumped",
+      "expected_output": "Checkpoint 4 FAILs with the digest mismatch",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "ship-3",
+      "prompt": "Argo `OutOfSync` with a failed hook Job",
+      "expected_output": "Names the force-resync playbook; asks before running it with `-e target_app`",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "ship-4",
+      "prompt": "Agent build running 30 minutes",
+      "expected_output": "`WAIT` with elapsed time and the note about the 35-minute base image; not a failure",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "ship-5",
+      "prompt": "Pod crash-loops on a distroless image",
+      "expected_output": "Names numeric `runAsUser`",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "ship-6",
+      "prompt": "\"Promote iap to production\" with the task in `Review`",
+      "expected_output": "Warns it is qc's call; promotes only on yes",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "ship-7",
+      "prompt": "jr-se active, \"ship it\"",
+      "expected_output": "Declines as out of role",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "ship-8",
+      "prompt": "A failure with no matching trap",
+      "expected_output": "Says no known cause; offers `diagnose`",
+      "files": []
+    }
+  ]
+}

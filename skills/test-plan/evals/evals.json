@@ -1,0 +1,48 @@
+{
+  "skill_name": "test-plan",
+  "evaluation": "Grade each case with and without the skill in isolated fixtures; never use live cluster writes or real secrets.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "untestable-rid",
+      "prompt": "(qa active) Plan tests for R1..R4; R4 says must be fast.",
+      "expected_output": "Reads pma requirement note, spec and linked tactic. Covers R1..R3 with happy/edge/error criteria; flags R4 untestable and proposes needs-info label plus reply to po. Never edits task note/title or invents threshold.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "complete-coverage",
+      "prompt": "All four R-ids have tests. Review this plan.",
+      "expected_output": "Shows plan table and 4 of 4 R-ids covered. Only on yes writes Test plan section and Test plan: reviewed YYYY-MM-DD (user, qa); preserves standalone Status line.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "infra-probe",
+      "prompt": "Plan tests for an infra requirement with an observable health check.",
+      "expected_output": "Uses probe level and concrete roxctl evidence command; includes testable edge/error criteria where applicable; does not execute cluster mutations.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "self-author-review",
+      "prompt": "(sr-se qa active) Review the test plan for my own spec.",
+      "expected_output": "Allowed without separation warning; notes plan reviewer == spec author in plan header; does not alter spec approval.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "bucket-syntax",
+      "prompt": "Separately authorised: move this task to Specifying.",
+      "expected_output": "Reads roxctl workspace pma <project> bucket ls then roxctl workspace pma edit <id> --bucket-id <resolved id>. No bucket-name flag or note edit.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "preflight-fail",
+      "prompt": "Plan tests when pma authentication is unavailable.",
+      "expected_output": "Shows preflight FAIL and fix, stops pma; no raw vja/browser or guessed requirement substitute.",
+      "files": []
+    }
+  ]
+}

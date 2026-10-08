@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <service>
+  annotations:
+    argocd.argoproj.io/sync-wave: "40"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: <service>
+  template:
+    metadata:
+      labels:
+        app: <service>
+    spec:
+      serviceAccountName: <service>
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: <numeric-uid>
+        fsGroup: <numeric-gid>
+      containers:
+        - name: <service>
+          image: registry.rotexai.com/<image-path>
+          ports:
+            - name: http
+              containerPort: <port>
+          envFrom:
+            - configMapRef:
+                name: <service>-config
+          readinessProbe:
+            httpGet:
+              path: <readiness-path>
+              port: http
+          livenessProbe:
+            httpGet:
+              path: <liveness-path>
+              port: http
+          resources:
+            requests:
+              cpu: <cpu-request>
+              memory: <memory-request>
+            limits:
+              cpu: <cpu-limit>
+              memory: <memory-limit>
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
