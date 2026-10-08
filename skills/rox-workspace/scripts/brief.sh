@@ -31,6 +31,7 @@ items_for() {
     des) echo "label:needs-design stale" ;;
     sr-se) echo "bucket:To_do bucket:Specifying bucket:Implementing bucket:Review" ;;
     jr-se | entry-se) echo "bucket:Specifying bucket:Implementing" ;;  # Jr: spec-approved/own-task filtering is the agent's job (se.md tier jr); the brief lists candidates
+    ba) echo "" ;;  # ba works only on the questions it is handed
     sa) echo "label:area:infra label:blocked stale" ;;
     qa) echo "specs-no-test-plan bucket:Specifying" ;;
     qc) echo "bucket:Review" ;;
@@ -41,7 +42,7 @@ items_for() {
 items=""
 for r in $roles; do
   case "$r" in
-    po | pm | des | sr-se | jr-se | entry-se | sa | qa | qc) ;;
+    po | pm | ba | des | sr-se | jr-se | entry-se | sa | qa | qc) ;;
     *) echo "SKIP role: unknown id '$r'" ; continue ;;
   esac
   for i in $(items_for "$r"); do

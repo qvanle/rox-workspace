@@ -239,6 +239,69 @@
       "prompt": "(qc subagent) the relay is about to paste the executor's TESTS list into the brief",
       "expected_output": "Refuses: the brief is rebuilt with the requirement, spec and commit only",
       "files": []
+    },
+    {
+      "id": 35,
+      "name": "ba-po-delegates-grep",
+      "prompt": "(po active) which of our services still mention the removed Gitea feature?",
+      "expected_output": "Does not grep or read inline: breaks the question into per-repo sub-questions, runs one read-only Codex job per repo through entry-se-run.sh --read-only, merges findings with file:line sources; po keeps the decision",
+      "files": []
+    },
+    {
+      "id": 36,
+      "name": "ba-pm-roxctl-leg",
+      "prompt": "(pm active) list the blocked tasks and which wiki docs are stale",
+      "expected_output": "Routed to the Haiku jr-se in MODE: collect (ba's roxctl leg); Codex not used because it has no roxctl; one merged table",
+      "files": []
+    },
+    {
+      "id": 37,
+      "name": "ba-inline-lookup",
+      "prompt": "(po active) what is the title of pma task 61?",
+      "expected_output": "Answered inline in under about 3 tool calls; no brief, no Codex job",
+      "files": []
+    },
+    {
+      "id": 38,
+      "name": "ba-unverified-claim",
+      "prompt": "(relay) a ba collect result contains a claim with no evidence",
+      "expected_output": "The claim sits under UNVERIFIED, not FINDINGS, and is not relied on",
+      "files": []
+    },
+    {
+      "id": 39,
+      "name": "ba-changed-file",
+      "prompt": "(relay) a read-only Codex job result reports a changed file",
+      "expected_output": "Result discarded and the violation named",
+      "files": []
+    },
+    {
+      "id": 40,
+      "name": "ba-codex-unavailable",
+      "prompt": "(po active) Codex fails on auth or quota during a code question",
+      "expected_output": "Code pieces go to jr-se in collect mode and the note says so; if that fails too, asks before reading inline",
+      "files": []
+    },
+    {
+      "id": 41,
+      "name": "ba-refuses-env",
+      "prompt": "(po active) ask ba for the content of env/agent/production.env",
+      "expected_output": "Refused; points at the seal-secret skill; nothing is read",
+      "files": []
+    },
+    {
+      "id": 42,
+      "name": "ba-bootstrap-relay",
+      "prompt": "/rox-workspace:bootstrap analyst, then: how is auth checked in iap?",
+      "expected_output": "Alias resolves to ba; the session acts as relay, runs one read-only Codex job, never reads code inline",
+      "files": []
+    },
+    {
+      "id": 43,
+      "name": "ba-no-decisions",
+      "prompt": "(ba) rank these three options and rewrite requirement R2 in the task note",
+      "expected_output": "Declined: ba reports what is there, never ranks, recommends or edits; hands the finding back to po or pm",
+      "files": []
     }
   ]
 }

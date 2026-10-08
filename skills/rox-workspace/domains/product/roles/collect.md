@@ -1,7 +1,7 @@
-# Collect work: read-only gathering goes to jr-se and entry-se
+# Collect work: read-only gathering goes to ba (Codex) and jr-se (roxctl)
 
 Applies to every role. Reading and collecting is cheap to parallelise and needs no judgment, so the expensive session breaks it down,
-delegates it, and keeps the synthesis and decisions. No approved spec or pma task is needed.
+delegates it, and keeps the synthesis and decisions. `po` and `pm` do this by default: they are the main requesters and `ba` is their assistant (`ba.md`). No approved spec or pma task is needed.
 
 ## When to delegate
 
@@ -16,10 +16,10 @@ delegates it, and keeps the synthesis and decisions. No approved spec or pma tas
 
 | The sub-question needs | Executor |
 | --- | --- |
-| Files, code, docs or saved reports in one repo; large reads, greps, summaries | `entry-se` (Codex, read-only): `entry-se-run.sh start <repo> <brief> --read-only`. One job per repo: put all of that repo's questions in one brief. Different repos run in parallel |
-| `roxctl` reads (pma, wiki, platform, infra), cluster probes, anything Codex's sandbox cannot reach | `jr-se` (Haiku subagent) in collect mode. Several may run in parallel |
+| Files, code, docs or saved reports in one repo; large reads, greps, summaries | `ba` (Codex, read-only): `entry-se-run.sh start <repo> <brief> --read-only`. One job per repo: put all of that repo's questions in one brief. Different repos run in parallel |
+| `roxctl` reads (pma, wiki, platform, infra), cluster probes, anything Codex's sandbox cannot reach | `jr-se` (Haiku subagent) in collect mode, acting as ba's roxctl leg. Several may run in parallel |
 
-## Rules for the executors (both)
+## Rules for the executors (ba and its roxctl leg)
 
 - Strictly read-only: no file writes, no git writes, no pma or wiki writes, no mutating command; `roxctl` read tier only.
 - Never read `env/` files or sealed-secret values; never print a secret.
@@ -41,7 +41,7 @@ UNVERIFIED: <claims without evidence>
 
 Fill `templates/collect-brief.md` (one per executor job), launch, wait (Codex: `wait` from inside the repo), read the blocks. Treat them as
 unchecked: open one or two cited `file:line` per job before relying on a conclusion. Merge into one answer with sources. If Codex is
-unavailable, route its questions to `jr-se`; if that fails too, ask the user before reading inline.
+unavailable, route its questions to `jr-se` with `FALLBACK: code` in the brief (it then reads the repo read-only); if that fails too, ask the user before reading inline.
 
 ## Run mode
 

@@ -7,6 +7,7 @@ Gates (who may do what) are advisory; the gate tables are in `docs/specs/rox-wor
 | --- | --- | --- | --- | --- | --- | --- |
 | `po` | product-owner | Product owner | Decide why and what: outcomes, priorities, acceptance | inline | inherit | `po.md` |
 | `pm` | project-manager | Project manager | Keep the cadence: refinement flow, cycles, carry-over | inline | inherit | `pm.md` |
+| `ba` | business-analyst, analyst | Business analyst | Assistant to po and pm: search, read, check claims, report with evidence | codex | Codex (read-only) | `ba.md` |
 | `des` | designer, ui, ux, ui-ux | UI/UX designer | Decide how it looks and flows (UI and UX), before it is built | inline | inherit | `des.md` |
 | `sr-se` | senior, senior-engineer | Senior software engineer | Decide how it is built: specs, technical decisions, review | inline | inherit | `se.md` (tier sr) |
 | `jr-se` | junior, junior-engineer | Junior software engineer | Build one task against an approved spec | subagent | haiku | `se.md` (tier jr) |
@@ -31,6 +32,6 @@ Gates (who may do what) are advisory; the gate tables are in `docs/specs/rox-wor
 | Infra, deploy, secrets, runbooks | sa |
 | Decision docs | the deciding role (po product, sr-se technical, des design, sa infra) |
 
-Read-only collection (search, read, probe, summarise) is delegated to `jr-se` (roxctl reads) and `entry-se` (code and docs, Codex read-only); see `collect.md`. Long commands whose output needs judging can be run by Codex from a command file (run mode, same file).
+Read-only collection (search, read, probe, summarise) is delegated to `ba` (code and docs, Codex read-only) and, for `roxctl` reads that Codex cannot reach, `jr-se` in collect mode; `po` and `pm` break their requests down and assign them to `ba`. See `collect.md`. Long commands whose output needs judging can be run by Codex from a command file (run mode, same file).
 
 Separation of duties (warn once per task): the implementer is not its `qc`; the drafter of a vision, strategy or tactic is not its ratifier.

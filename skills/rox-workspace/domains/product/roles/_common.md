@@ -20,7 +20,7 @@ Before an action whose owner (see `README.md` gates and the role's Hands off) is
 - Reading (search, get, list, show) is never out of role. The skill's own confirmations (delete, bulk move) still apply.
 - Separation of duties: warn once per task when the active set both implements and verifies it, or both drafts and ratifies a vision, strategy or tactic.
 
-## Relay mode (jr-se, entry-se and qc: qc steps are in qc.md)
+## Relay mode (jr-se, entry-se, ba and qc: qc steps are in qc.md; ba steps are in collect.md)
 
 The main session does not read or write code while `jr-se` or `entry-se` is active. For a task: `pma show <id>`; read the spec's `Status:` line; if it is not
 `approved`, say the spec needs `sr-se` approval and stop. Otherwise dispatch `Agent` with `subagent_type: "rox-workspace:jr-se"` and a self-contained
@@ -36,4 +36,4 @@ then move the task to `Review` yourself. One job per repo. If Codex is unavailab
 
 ## Collect work, brief and card
 
-Read-only gathering is delegated to `jr-se` and `entry-se`: see `collect.md`. `bash <skill base dir>/scripts/brief.sh <ids> --domain <domain>` prints the starting view; the card is Active, Owns, Hands off, Brief tables, Next.
+Read-only gathering is delegated to `ba` (Codex) and its roxctl leg `jr-se`: see `collect.md` and `ba.md`. With `po` or `pm` active, searching and reading beyond about 3 tool calls is never done inline: break it into sub-questions and assign them to `ba`. `ba` may be dispatched by any active role without being bootstrapped; if `ba` itself is active, the session is its relay and does the same. `bash <skill base dir>/scripts/brief.sh <ids> --domain <domain>` prints the starting view; the card is Active, Owns, Hands off, Brief tables, Next.

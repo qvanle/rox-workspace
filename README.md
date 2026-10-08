@@ -44,6 +44,7 @@ With no argument it asks. Roles are advisory: an action another role owns makes 
 | --- | --- | --- |
 | `po` | Why and what: outcomes, priorities, acceptance | inline |
 | `pm` | Cadence: refinement, cycles, carry-over | inline |
+| `ba` | Assistant to `po` and `pm`: search, read, check claims, report with evidence (never decides or writes) | Codex job, read-only (roxctl reads via Haiku `jr-se`) |
 | `des` | How it looks and flows, before it is built | inline |
 | `sr-se` | How it is built: specs, technical decisions, review | inline |
 | `jr-se` | Build one task against an approved spec | Haiku subagent |
@@ -52,8 +53,8 @@ With no argument it asks. Roles are advisory: an action another role owns makes 
 | `qa` | Make it testable before the build: criteria and test plan | inline |
 | `qc` | Prove it works after the build: verify, move to Done | Sonnet subagent with a fresh context (inline on request) |
 
-**Collect work.** Read-only gathering (search, read, list, probe, summarise, check claims) is broken down and delegated to `jr-se` (for `roxctl` reads)
-and `entry-se` (for files and code, Codex read-only). See `skills/rox-workspace/domains/product/roles/collect.md`.
+**Collect work.** Read-only gathering (search, read, list, probe, summarise, check claims) is broken down by `po` and `pm` (or anyone) and assigned to `ba` (files and code, Codex read-only)
+and, for `roxctl` reads Codex cannot reach, `jr-se`. See `skills/rox-workspace/domains/product/roles/collect.md`.
 
 **Choosing who builds.** `sr-se` picks `exec:sr`, `exec:jr` or `exec:entry` for a ready task: unclear, risky or infra work stays with `sr-se` (or `sa`),
 tool-heavy small tasks go to `jr-se`, precise self-contained code changes go to `entry-se`. The table is in the product domain spec.
