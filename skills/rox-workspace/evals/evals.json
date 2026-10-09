@@ -12,7 +12,7 @@
       "id": 2,
       "name": "plan-sprint",
       "prompt": "plan the sprint starting monday 12 oct, one week, goal: owners can see each workflow step. take tasks 42 and 43 from the backlog",
-      "expected_output": "Cycle doc Cycles/261012-<name> with start/end, sprint project of the same name under Product, buckets, tasks 42 and 43 moved in, ids listed in the cycle doc Scope; tasks that lack type, size or area labels get them",
+      "expected_output": "Cycle doc Cycles/261012-<name> with start/end, sprint project of the same name under the tactic's project (Product/<tactic>/<YYMMDD-name>), buckets, tasks 42 and 43 moved in, ids listed in the cycle doc Scope; tasks that lack type, size or area labels get them",
       "files": []
     },
     {
@@ -55,7 +55,7 @@
       "id": 8,
       "name": "requirement-task",
       "prompt": "customers should be able to pay by card. write that up as a task for the backlog, medium size, it touches billing and the portal",
-      "expected_output": "Requirement task in Backlog: HTML note with numbered R1.., acceptance, out of scope; 4 or more colourful labels that describe the task; a new label created (with a colour) for an idea no existing label covers; no --force-create; note not Markdown",
+      "expected_output": "Requirement task in the tactic's Backlog (Product/<tactic>/Backlog): HTML note with numbered R1.., acceptance, out of scope; 4 or more colourful labels that describe the task; a new label created (with a colour) for an idea no existing label covers; no --force-create; note not Markdown",
       "files": []
     },
     {

@@ -58,21 +58,30 @@ roxctl workspace wiki create "Decisions/<YYMMDD-name>" --file F
 ## Sprint (pma, Vikunja)
 
 ```
-Product                  root, no tasks          Backlog      buckets Idea, Refining, Ready
-  Backlog                the Product Backlog     <YYMMDD-name> one child project per sprint = the cycle doc title
+<Domain>                       root per domain (Product), no tasks of its own
+  Backlog                      the domain Backlog = the STRATEGY backlog: requirements that serve a strategy
+                               (a Pillar) and have no tactic yet; buckets Idea, Refining, Ready
+  <Tactic name>                one project per tactic, the wiki title without "Tactic: ", no tasks
+    Backlog                    that tactic's backlog; buckets Idea, Refining, Ready
+    <YYMMDD-name>              one project per sprint of that tactic = the cycle doc title
 ```
+
+The tree is `<domain>/{Backlog, <tactic>/{Backlog, <YYMMDD-sprint>}}`. The level of the backlog is the level of the wiki document it serves: `<domain>/Backlog` serves the strategy, `<domain>/<tactic>/Backlog` serves that tactic. A requirement that serves a tactic belongs to exactly one tactic, so it is written into that tactic's
+`Backlog` and later moved into one of that tactic's sprints. Create the tactic project (`pma project add "<Tactic name>" --parent Product`) and its
+`Backlog` (`--parent <tactic id>`, pass the id because many projects are named `Backlog`) when the tactic's first requirement is written.
+When a strategy requirement gets a tactic, move it (`pma edit <id> --project <tactic backlog id>`). A sprint serves one tactic; work for two tactics is two sprints.
 
 Sprint board buckets: `To do`, `Specifying`, `Implementing`, `Review`, `Done` (Done completes the task). Sprint goal = the sprint
 project description (goal + wiki cycle link). Archive the sprint project when it closes.
 
 | Step | Wiki | pma | Role |
 | --- | --- | --- | --- |
-| Refine | | write requirement tasks into `Backlog`: `Idea`, `Refining`, `Ready` (Ready = note complete) | pm (`Idea` to `Refining`), po (`Ready`) |
-| Plan | create `Cycles/<name>` with start/end, goal, scope | create the sprint project, set goal, buckets; move `Ready` tasks in to `To do` | pm |
+| Refine | | write requirement tasks into the tactic's `Backlog`: `Idea`, `Refining`, `Ready` (Ready = note complete) | pm (`Idea` to `Refining`), po (`Ready`) |
+| Plan | create `Cycles/<name>` with start/end, goal, scope | create the sprint project under the tactic, set goal, buckets; move `Ready` tasks in to `To do` | pm |
 | Specify | | move to `Specifying`; the spec is written in the code repo by the spec-writing skill (see Spec below). **Never edit the task's note** | sr-se |
 | Implement | | `Implementing`, `Review`; the agent implements against R1..Rn and the spec | sr-se, jr-se |
 | Done | | move to `Done` (this completes it); the commit or PR goes in the spec file, not the note | qc |
-| Close | write Outcome and Retro, `status: closed` | unfinished tasks back to `Backlog` or next sprint; archive the sprint project | pm |
+| Close | write Outcome and Retro, `status: closed` | unfinished tasks back to the tactic's `Backlog` or its next sprint; archive the sprint project | pm |
 
 The Role column is advisory (see `roles/README.md`); with no role active nothing changes.
 

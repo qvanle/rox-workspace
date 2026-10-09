@@ -1,6 +1,6 @@
 {
   "name": "rox-workspace",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "RotexAI workspace through roxctl (Outline wiki + Vikunja pma), with team roles: /rox-workspace:bootstrap <role>.",
   "author": {
     "name": "qvanle"

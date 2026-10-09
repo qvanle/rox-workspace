@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "Local marketplace for the rox-workspace plugin.",
-    "version": "0.2.0"
+    "version": "0.3.1"
   },
   "plugins": [
     {
       "name": "rox-workspace",
       "description": "RotexAI workspace through roxctl (Outline wiki + Vikunja pma), with team roles.",
-      "version": "0.2.0",
+      "version": "0.3.1",
       "author": {
         "name": "qvanle"
       },

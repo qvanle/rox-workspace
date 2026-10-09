@@ -30,7 +30,7 @@ that needs both.
 | Stale | `wiki stale [--collection C] [--all]` |
 | Another domain | add `--collection "<name>"` (see `domains/README.md`); default is `RotexAI production` |
 | Task | `pma <PROJECT> add "<title>" --note "$(cat F.html)" --label L ...`, `pma show <id>`, `pma edit <id> ...`, `pma toggle <id>` |
-| Sprint | `pma project add "<name>" --parent Product`, `pma project edit <name> --description-file F`, `--archive` |
+| Sprint | `pma project add "<Tactic>" --parent Product`, `pma project add "<YYMMDD-name>" --parent <tactic id>` (sprint), `pma project add Backlog --parent <tactic id>`, `pma project edit <name> --description-file F`, `--archive` |
 | Buckets, labels | `pma <PROJECT> bucket ls`, `pma label list`, `pma label add "<title>" --color HEX` |
 
 Dates are `YYYY-MM-DD`. `--json` goes before the tool. Details: `references/wiki.md` before a wiki write,
@@ -50,8 +50,8 @@ matching file in `templates/`; `examples/` shows one filled in. Load an example 
 | Find | search, get the one best hit, answer with title and link. If nothing relevant turns up in two searches, say so and stop: do not read unrelated documents | nothing |
 | Create doc | search for a duplicate, pick level, fill template with `realizes:` the parent, create with dates | wiki.md, header.md, STRUCTURE.md, one template |
 | Edit doc | get raw, change only what was asked, update | wiki.md, header.md |
-| Plan cycle | cycle doc `Cycles/<YYMMDD-name>`, sprint project of the same name, move **each** `Ready` task in (one `pma edit <id> --project` per task), add any missing type, size or area label to a task that lacks them, list ids in Scope | wiki.md, pma.md, STRUCTURE.md, cycle.md |
-| Requirement | write the HTML note, add to `Backlog` with 3 to 5 labels that describe it (usually type, size, area; create new labels for new ideas) | pma.md, requirement.html |
+| Plan cycle | cycle doc `Cycles/<YYMMDD-name>`, sprint project of the same name under the tactic's project, move **each** `Ready` task in (one `pma edit <id> --project` per task), add any missing type, size or area label to a task that lacks them, list ids in Scope | wiki.md, pma.md, STRUCTURE.md, cycle.md |
+| Requirement | write the HTML note, add to the tactic's `Backlog` (`<Domain>/<Tactic>/Backlog`; create the tactic project and Backlog first if missing), or to `<Domain>/Backlog` when it serves a strategy and has no tactic yet with 3 to 5 labels that describe it (usually type, size, area; create new labels for new ideas) | pma.md, requirement.html |
 | Specify | read the task and what it links (`pma show`, `wiki get`), move the task to `Specifying`, then invoke `superpowers:brainstorming` with the task note and linked tactic as its input and the location `docs/specs/<YYMMDD-name>.md` in the code repo. The spec starts with `Requirement: <project> #<id>`; the note stays untouched. If superpowers is not installed, tell the user (`/plugin install superpowers@claude-plugins-official`) and use `spec.md` meanwhile | pma.md, STRUCTURE.md |
 | Implement | task to `Implementing`, `Review`, `Done`; the commit or PR is recorded in the spec file | pma.md |
 | Close cycle | Outcome and Retro in the cycle doc, unfinished tasks out, archive the sprint project | wiki.md, pma.md, cycle.md |

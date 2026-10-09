@@ -61,12 +61,27 @@ project_id() { # $1 = exact title, optional $2 = parent id
   echo "$projects_json" | jq -r --arg t "$1" --argjson p "${2:-null}" \
     '[.[] | select(.title==$t and (.is_archived|not) and ($p==null or .parent_project_id==$p))][0].id // empty'
 }
-current_sprint() { # newest non-archived child of Product other than Backlog; prints "id<TAB>title"
+# Layout: Product / {Backlog (strategy), <tactic> / {Backlog, <YYMMDD-sprint>}}. Both helpers print one "id<TAB>title<TAB>tactic" line per project.
+open_sprints() { # non-archived non-Backlog children of every tactic project under Product, oldest first
   local prod
   prod="$(project_id Product)"
   [ -n "$prod" ] || return 1
-  echo "$projects_json" | jq -r --argjson p "$prod" \
-    '[.[] | select(.parent_project_id==$p and .title!="Backlog" and (.is_archived|not))] | sort_by(.title) | last | select(.!=null) | "\(.id)\t\(.title)"'
+  echo "$projects_json" | jq -r --argjson p "$prod" '
+    . as $all | [$all[] | select(.parent_project_id==$p and (.is_archived|not))] as $tac
+    | [ $all[] | select(.title!="Backlog" and (.is_archived|not)) as $s
+        | $tac[] | select(.id==$s.parent_project_id) | {id:$s.id, title:$s.title, tactic:.title} ]
+    | sort_by(.title)[] | "\(.id)\t\(.title)\t\(.tactic)"'
+}
+backlogs() { # the domain Backlog (the strategy backlog) first, then the Backlog project of every tactic under Product
+  local prod
+  prod="$(project_id Product)"
+  [ -n "$prod" ] || return 1
+  echo "$projects_json" | jq -r --argjson p "$prod" '
+    . as $all | [$all[] | select(.parent_project_id==$p and (.is_archived|not))] as $tac
+    | [ $all[] | select(.title=="Backlog" and (.is_archived|not) and .parent_project_id==$p) | {id:.id, tactic:"Strategy", k:0} ] as $strat
+    | [ $all[] | select(.title=="Backlog" and (.is_archived|not)) as $b
+        | $tac[] | select(.id==$b.parent_project_id) | {id:$b.id, tactic:.title, k:1} ] as $tb
+    | ($strat + ($tb | sort_by(.tactic)))[] | "\(.id)\tBacklog\t\(.tactic)"'
 }
 # tasks of a project as TSV: id, title, done, bucket name, labels
 tasks_tsv() { # $1 = project id
@@ -105,41 +120,49 @@ item_stale() {
 item_drafts() { echo "SKIP drafts: needs 'roxctl workspace wiki stale --status draft' (not built yet)"; }
 item_backlog() {
   need_projects backlog || return
-  local prod bl rows
-  prod="$(project_id Product)"; bl="$(project_id Backlog "${prod:-null}")"
-  [ -n "$bl" ] || { echo "SKIP backlog: project Product/Backlog not found"; return; }
-  rows="$(tasks_tsv "$bl")" || { echo "SKIP backlog: cannot list tasks"; return; }
-  [ -n "$rows" ] || { echo "nothing waiting"; return; }
-  echo "$rows" | print_tasks
+  local bls line id tactic rows any="" failed=""
+  bls="$(backlogs)" || bls=""
+  [ -n "$bls" ] || { echo "SKIP backlog: no Backlog project under Product or one of its tactics"; return; }
+  while IFS=$'\t' read -r id _ tactic; do
+    rows="$(tasks_tsv "$id")" || { echo "SKIP backlog $tactic: cannot list tasks"; failed=1; continue; }
+    [ -n "$rows" ] || continue
+    any=1; echo "Backlog: $tactic (project #$id)"
+    echo "$rows" | print_tasks
+  done <<<"$bls"
+  [ -n "$any" ] || [ -n "$failed" ] || echo "nothing waiting"
 }
 item_cycle() {
   need_projects cycle || return
-  local cur id title rows
-  cur="$(current_sprint)" || cur=""
-  [ -n "$cur" ] || { echo "SKIP cycle: no open sprint project under Product"; return; }
-  id="${cur%%$'\t'*}"; title="${cur#*$'\t'}"
-  echo "Sprint: $title (project #$id)"
-  rows="$(tasks_tsv "$id")" || { echo "SKIP cycle: cannot list tasks"; return; }
-  [ -n "$rows" ] || { echo "nothing waiting"; return; }
-  echo "$rows" | print_tasks
+  local sps id title tactic rows any=""
+  sps="$(open_sprints)" || sps=""
+  [ -n "$sps" ] || { echo "SKIP cycle: no open sprint project under a tactic of Product"; return; }
+  while IFS=$'\t' read -r id title tactic; do
+    echo "Sprint: $title, tactic $tactic (project #$id)"
+    rows="$(tasks_tsv "$id")" || { echo "SKIP cycle $title: cannot list tasks"; continue; }
+    [ -n "$rows" ] || { echo "nothing waiting"; continue; }
+    echo "$rows" | print_tasks
+  done <<<"$sps"
 }
 sprint_and_backlog_rows() {
-  local prod bl cur id
-  prod="$(project_id Product)"; bl="$(project_id Backlog "${prod:-null}")"
-  cur="$(current_sprint)" || cur=""; id="${cur%%$'\t'*}"
-  [ -n "$bl" ] || [ -n "$id" ] || return 1
-  if [ -n "$bl" ]; then tasks_tsv "$bl" || return 1; fi
-  if [ -n "$id" ]; then tasks_tsv "$id" || return 1; fi
+  local ids id found="" rows
+  ids="$( { backlogs; open_sprints; } 2>/dev/null | cut -f1)"
+  [ -n "$ids" ] || return 1
+  for id in $ids; do
+    rows="$(tasks_tsv "$id")" || return 1
+    [ -n "$rows" ] && printf '%s\n' "$rows"
+  done
   return 0
 }
-item_bucket() { # $1 = bucket name (underscore for space)
+item_bucket() { # $1 = bucket name (underscore for space), over every open sprint
   need_projects "bucket:$1" || return
-  local name="${1//_/ }" cur id rows
-  cur="$(current_sprint)" || cur=""
-  [ -n "$cur" ] || { echo "SKIP bucket:$name: no open sprint project under Product"; return; }
-  id="${cur%%$'\t'*}"
-  rows="$(tasks_tsv "$id")" || { echo "SKIP bucket:$name: cannot list tasks"; return; }
-  rows="$(printf '%s\n' "$rows" | awk -F'\t' -v b="$name" '$4==b')"
+  local name="${1//_/ }" sps id rows all=""
+  sps="$(open_sprints)" || sps=""
+  [ -n "$sps" ] || { echo "SKIP bucket:$name: no open sprint project under a tactic of Product"; return; }
+  while IFS=$'\t' read -r id _ _; do
+    rows="$(tasks_tsv "$id")" || { echo "SKIP bucket:$name: cannot list tasks"; return; }
+    [ -n "$rows" ] && all="$all$rows"$'\n'
+  done <<<"$sps"
+  rows="$(printf '%s' "$all" | awk -F'\t' -v b="$name" '$4==b')"
   [ -n "$rows" ] || { echo "nothing waiting"; return; }
   echo "$rows" | print_tasks
 }
