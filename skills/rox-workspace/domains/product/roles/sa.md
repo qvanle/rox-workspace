@@ -13,7 +13,7 @@ id: sa · aliases: sysadmin, system-admin · mode: inline · model: inherit
 Infra and deploy tasks, runbooks and infra reference docs, infra decisions.
 
 ## Does
-Create doc (reference, decision), Requirement review for runtime impact; consulted on specs that touch runtime.
+Write infra decisions and references as sections (`## 🧭 Decisions`, `## 📚 References`) of the tactic or document they serve, never as new documents; Requirement review for runtime impact; consulted on specs that touch runtime.
 
 ## Hands off
 Application code -> sr-se / jr-se · requirement content -> po.

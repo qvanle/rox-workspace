@@ -22,6 +22,7 @@ Apply the union rule; `sr-se` supersedes `jr-se` and `entry-se`. With no active 
 | jr-se, entry-se | Decline: "that is sr-se's call"; return the staged diff summary, never commit or push |
 | po, pm, des, qa, qc | Own docs/specs allowed; otherwise warn and ask per `_common.md` |
 
+Auth check: never conclude a roxctl tool is unauthorized from a missing token file or `auth status` alone. Run one cheap real read first (`roxctl platform codebase whoami`, `roxctl platform ci repo ls`, `roxctl platform cd app list`, `roxctl platform registry repo ls`). Only if that read fails with an auth error, ask the user to run `! roxctl platform <tool> auth login`. Never run `auth login --help`: it is read as an empty token.
 Run `bash <skill base dir>/scripts/commit-preflight.sh --repo PATH`; show repo, branch, remote names and ahead/behind.
 On any FAIL stop the commit, report the fix and ask how to resolve it. On non-main, explain main-only pushes;
 offer to keep the work local. Never switch branches, pull or rebase silently.

@@ -1,6 +1,6 @@
-<!-- Title: "Cycles/261012-trace-viewer". ILLUSTRATIVE, shown at planning time (Outcome and Retro are still empty). -->
+<!-- Title: "Cycle 7: 261012-trace-viewer", path ".../Tactic 3: Execution Trace/Plan 2: Trace viewer v1/Cycle 7: 261012-trace-viewer"; the pma sprint project is "261012-trace-viewer". ILLUSTRATIVE, shown at planning time (Outcome and Retro are still empty). -->
 > level: cycle · status: active · owner: qvanle
-> realizes: [Tactic: Execution Trace](url) · depends-on: none
+> realizes: [Plan 2: Trace viewer v1](url) · depends-on: none
 > start: 2026-10-12 · end: 2026-10-16 · updated: 2026-10-08
 
 :::info
@@ -27,3 +27,6 @@
 | 👍 Keep | 🔧 Change | 🗑️ Drop |
 | --- | --- | --- |
 | (at close) | (at close) | (at close) |
+
+## 📚 References
+The trace table and retention are in [Tactic 3: Execution Trace](url), section References.

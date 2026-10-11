@@ -31,11 +31,16 @@ Search first, then `get` the one hit. Report the title and the link; do not past
 ## Create
 
 ```
-roxctl workspace wiki create "Cycles/261012-trace-viewer" --file /path/doc.md --start 2026-10-12 --end 2026-10-16
+P="Pillar 1: Radical Accessibility/Strategy 2: Owner-readable execution/Tactic 3: Execution Trace/Plan 2: Trace viewer v1/Cycle 7: 261012-trace-viewer"
+bash <skill base dir>/scripts/wiki-guard.sh check "$P"     # must print OK; REFUSED = do not create
+roxctl workspace wiki create "$P" --file /path/doc.md --start 2026-10-12 --end 2026-10-16
 ```
 
-- The path is `/`-separated titles. Missing ancestors are created as stubs; the first segment is matched by title anywhere in the
-  collection, later ones under the parent just found. A title that matches two documents is an error.
+- The path is `/`-separated titles, the whole chain `Pillar -> Strategy -> Tactic -> Plan -> Cycle` down to the new document, each
+  title with its prefix and id (`domains/product/STRUCTURE.md`). roxctl would create missing ancestors as stubs and accept any title,
+  so `scripts/wiki-guard.sh check` is mandatory first; it refuses a missing prefix, a skipped level, a missing ancestor, a reused id
+  and an existing leaf. The first segment is matched by title anywhere in the collection, later ones under the parent just found.
+  A title that matches two documents is an error. `wiki-guard.sh next <level>` gives the next free id.
 - It **fails if the leaf already exists**: that is your duplicate guard, never work around it with a variant title.
 - `--text` or `--file` set the body. `--start` and `--end` are taken by roxctl (not passed to `ol`) and written into the
   metadata block together with `updated`. Everything is published at once.
@@ -76,5 +81,7 @@ Documents with no block are counted, not listed; they gain a block the next time
 
 - roxctl's own flags (`--json`, `--sudo`) go before the tool: `roxctl --json workspace wiki stale`, not after the action.
 - Do not pass `--title`, `--parent` to `create`; the path decides them.
+- `update --title` and `move --parent` are guarded by the same rules: the title keeps its `Level <id>:` prefix and the new parent is the level above (the guard cannot check a move: read the new parent's `level:` header yourself and refuse a parent that is not exactly one level up).
+- A decision or a reference is never created as a document: it is an edit (`get --raw`, add the entry, `update`) to its tactic or using document.
 - Do not re-`get` a document after writing it. A write that exits 0 is done.
-- Legacy documents have no header and free-form titles; leave their titles alone.
+- Legacy documents (no header, free-form titles, `Decisions`/`Cycles` indexes) are not created again and are migrated only on request; leave their titles alone otherwise.

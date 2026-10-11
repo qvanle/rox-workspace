@@ -23,4 +23,4 @@ Plan cycle, Close cycle, Requirement (write the note with po), Daily check. Add 
 `cycle`, `backlog`, `label:blocked`, `stale`
 
 ## Load
-`STRUCTURE.md`, `references/pma.md`, `references/wiki.md`; templates cycle, requirement.
+`STRUCTURE.md`, `references/pma.md`, `references/wiki.md`; templates plan, cycle, requirement.

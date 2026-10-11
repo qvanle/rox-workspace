@@ -1,43 +1,42 @@
-<!-- Title: "Production Strategy". Restates the existing wiki doc (four pillars), shortened. -->
+<!-- Title: "Strategy 2: Owner-readable execution", child of "Pillar 1: Radical Accessibility". ILLUSTRATIVE. -->
 > level: strategy · status: active · owner: qvanle
-> realizes: [Product Vision: Beyond the Black-Box Backend](url) · depends-on: none
+> realizes: [Pillar 1: Radical Accessibility](url) · depends-on: none
 > start: 2026-09-16 · end: 2027-03-16 · updated: 2026-10-08
 
 :::info
-**TL;DR** Backend transparency only becomes a sellable product if ==four conditions hold at the same time==; drop any one and the wedge collapses.
+**TL;DR** Transparency reaches a non-technical owner only if ==they can watch their own logic run==, not read about it afterwards.
 :::
 
 ## 🧭 Context
-The vision claims backend transparency beats Lovable, Base44 and v0. Each condition has its own `Pillar n:` document.
+The pillar says seeing logic must never require reading code. Today a run shows its final state, not what each step did.
 
 ## 🏛️ Conditions
 
 | # | Condition | Why required | How we would know | Risk |
 | --- | --- | --- | --- | --- |
-| 1️⃣ | **Radical accessibility** | Transparency must reach a non-technical owner | Changes made with no developer or agency | Seeing logic ever requires reading code |
-| 2️⃣ | **Cost leadership under profitability** | An unaffordable product never reaches its customer | Lowest viable price, margin never negative | Per-tenant work grows with tenant count |
-| 3️⃣ | **High fault tolerance** | A transparent workflow that fails silently destroys trust | Failures are visible and recoverable | Hidden retries or swallowed errors |
-| 4️⃣ | **Development and agent workflow governance** | None of the above survives release after release without it | Every change auditable, people and AI agents alike | Ad-hoc changes outside the process |
+| 1️⃣ | **Every step's input and output is visible** | An owner cannot trust what they cannot see | Any finished run can be opened step by step | Outputs are dropped by the engine |
+| 2️⃣ | **A failure explains itself** | A silent failure destroys trust | The failed step is marked and shows its error | Errors swallowed by retries |
 
 :::warning
-**Weakest condition right now:** the metrics for conditions 1 and 3 are not yet measured.
+**Weakest condition right now:** condition 1; the engine does not keep step outputs.
 :::
 
 ---
 
 ## 📊 Metrics to track
-- [ ] Share of logic and schema changes with zero developer involvement (not yet measured).
-- [ ] Time from "I want to change X" to live (not yet measured).
-- [ ] Conversation turns for a routine change (not yet measured).
+- [ ] Share of runs an owner can open step by step (not yet measured).
 
 ## 🚫 Not doing
-- Out-designing competitors' frontends; the frontend stays conventional on purpose.
+- Editing a workflow from the run view.
 
 ## ❓ Open questions
-- Where is the line between conversational simplicity and over-simplifying real business nuance?
+- How long should a run stay readable?
+
+## 📚 References
+Engine retention limits: see [Tactic 3: Execution Trace](url), section References.
 
 ## 📝 Review notes
 
 | Date | Change | Why |
 | --- | --- | --- |
-| 2026-10-08 | Header added; layout refreshed | Alignment with the rox-workspace structure |
+| 2026-10-08 | Created | Example for the rox-workspace templates |

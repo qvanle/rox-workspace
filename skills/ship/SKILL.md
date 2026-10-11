@@ -11,6 +11,7 @@ Start after the push to `internal`; pushing belongs to `rox-workspace:commit`.
 Resolve service, source repo, expected commit and `manifest/` from cwd or ask for missing inputs.
 Use only `roxctl platform` and tracked Ansible playbooks for cluster access; never ad-hoc SSH or kubectl.
 Check roxctl and its wrapped argocd, woodpecker-cli and regctl availability; stop the tool on FAIL with its fix.
+Auth check: never conclude a roxctl tool is unauthorized from a missing token file or `auth status` alone. Run one cheap real read first (`roxctl platform codebase whoami`, `roxctl platform ci repo ls`, `roxctl platform cd app list`, `roxctl platform registry repo ls`). Only if that read fails with an auth error, ask the user to run `! roxctl platform <tool> auth login`. Never run `auth login --help`: it is read as an empty token.
 Read the installed help before using flags. Some leaf `--help` calls execute commands:
 use category help first; if it cannot document the command and flags, report SKIP rather than probe blindly.
 

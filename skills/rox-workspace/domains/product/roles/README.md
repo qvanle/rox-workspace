@@ -30,7 +30,7 @@ Gates (who may do what) are advisory; the gate tables are in `docs/specs/rox-wor
 | `Review` to `Done` (or back to `Implementing`) | qc |
 | Design decisions; clear `needs-design` | des |
 | Infra, deploy, secrets, runbooks | sa |
-| Decision docs | the deciding role (po product, sr-se technical, des design, sa infra) |
+| Decision entries (a section of the tactic, never a document) | the deciding role (po product, sr-se technical, des design, sa infra) |
 
 Read-only collection (search, read, probe, summarise) is delegated to `ba` (code and docs, Codex read-only) and, for `roxctl` reads that Codex cannot reach, `jr-se` in collect mode; `po` and `pm` break their requests down and assign them to `ba`. See `collect.md`. Long commands whose output needs judging can be run by Codex from a command file (run mode, same file).
 

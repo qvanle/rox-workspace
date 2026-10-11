@@ -13,7 +13,7 @@ id: des · aliases: designer, ui, ux, ui-ux · mode: inline · model: inherit
 Design reference docs (user flows, screen states, components, tokens), design decisions, clearing `needs-design`.
 
 ## Does
-Create doc (reference, decision), consulted on requirements and specs.
+Write design decisions and references as sections (`## 🧭 Decisions`, `## 📚 References`) of the tactic or document they serve, never as new documents; consulted on requirements and specs.
 
 ## Hands off
 Building it -> sr-se / jr-se · requirement content -> po.
@@ -22,4 +22,4 @@ Building it -> sr-se / jr-se · requirement content -> po.
 `label:needs-design`, `stale`
 
 ## Load
-`references/wiki.md`, `references/header.md`; template decision.
+`references/wiki.md`, `references/header.md`; template tactical (Decisions section).

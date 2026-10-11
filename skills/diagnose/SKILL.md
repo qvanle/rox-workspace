@@ -10,6 +10,7 @@ description: Diagnose RotexAI aos cluster and platform faults using known sympto
 Investigate cluster/platform faults; application fixes belong to sr-se, capacity planning is outside this skill.
 Read [symptoms.md](references/symptoms.md) first. Locate aos and `IaC/`; verify every selected playbook exists and read its header and tasks before running it. Directory placement alone does not establish a read tier.
 Check the needed binary (`ROXCTL_BIN` or `roxctl`; Ansible only if needed) with `command -v`, and inspect read-only `--help` for exact probe syntax. On failure print `FAIL <tool>: missing -- <installation/setup fix>` and stop that tool; never silently fall back to SSH, kubectl or raw HTTP.
+Auth check: never conclude a roxctl tool is unauthorized from a missing token file or `auth status` alone. Run one cheap real read first (`roxctl platform codebase whoami`, `roxctl platform ci repo ls`, `roxctl platform cd app list`, `roxctl platform registry repo ls`). Only if that read fails with an auth error, ask the user to run `! roxctl platform <tool> auth login`. Never run `auth login --help`: it is read as an empty token.
 All cluster interaction uses roxctl or tracked playbooks. Root-required playbooks use `-u qvanle`; inventory user deploy has no sudo. Do not print secrets, tokens or private values; redact evidence before displaying it.
 
 ## 2. Investigation

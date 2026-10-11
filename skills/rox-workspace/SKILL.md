@@ -1,6 +1,6 @@
 ---
 name: rox-workspace
-description: Work in the RotexAI workspace through roxctl - the Outline wiki (wiki.rotexai.com) and the pma project manager (Vikunja). Use this skill whenever the user wants to read, search, write, update, move, archive or delete a wiki/Outline document; write a vision, strategy, tactic, sprint/cycle doc, decision or spec; create, plan, refine or close tasks, requirements, backlog items or sprints in pma/Vikunja; or run the daily check for stale docs - even if they only say "write that up", "note this down", "add a task", "plan the sprint", "what is stale", "what did we decide". Always use it instead of browser automation, raw ol/vja, or a local file. Works in any project.
+description: Work in the RotexAI workspace through roxctl - the Outline wiki (wiki.rotexai.com) and the pma project manager (Vikunja). Use this skill whenever the user wants to read, search, write, update, move, archive or delete a wiki/Outline document; write a pillar, strategy, tactic, plan or cycle doc, record a decision or spec; create, plan, refine or close tasks, requirements, backlog items or sprints in pma/Vikunja; or run the daily check for stale docs - even if they only say "write that up", "note this down", "add a task", "plan the sprint", "what is stale", "what did we decide". Always use it instead of browser automation, raw ol/vja, or a local file. Works in any project.
 ---
 
 # rox-workspace
@@ -24,7 +24,7 @@ that needs both.
 | Intent | Command (all start `roxctl workspace`) |
 | --- | --- |
 | Find | `wiki search "<words>" --limit 5`, then `wiki get <id> --raw` |
-| Create | `wiki create "<path/Title>" --file F --start D --end D` |
+| Create | `scripts/wiki-guard.sh check "<chain path>"`, then `wiki create "<chain path>" --file F --start D --end D` (never without the guard) |
 | Update | `wiki get <id> --raw`, edit, `wiki update <id> --file F` |
 | Move, archive, delete | `wiki move <id> --parent <p>`, `wiki archive <id>`, `wiki delete <id> --confirm` |
 | Stale | `wiki stale [--collection C] [--all]` |
@@ -39,18 +39,26 @@ Dates are `YYYY-MM-DD`. `--json` goes before the tool. Details: `references/wiki
 ## 3. Domain and level
 
 Read `domains/README.md` (15 lines) to find the domain. If it is `planned`, tell the user it is not defined yet and stop;
-do not reuse another domain's structure. Otherwise read `domains/<domain>/STRUCTURE.md`: it has the levels (vision, strategy,
-tactical, cycle, decision, reference), titles, the sprint layout, labels and the "which level is this?" rule. Fill the
-matching file in `templates/`; `examples/` shows one filled in. Load an example only when you need it.
+do not reuse another domain's structure. Otherwise read `domains/<domain>/STRUCTURE.md`: it has the chain
+(`pillar -> strategy -> tactic -> plan -> cycle`), the mandatory title prefixes (`Pillar <id>:`, `Strategy <id>:`, `Tactic <id>:`,
+`Plan <id>:`, `Cycle <id>:`), the sprint layout, labels and the "which level is this?" rule. Fill the matching file in `templates/`;
+`examples/` shows one filled in. Load an example only when you need it.
+
+**The wiki holds only those levels.** A decision is a section (`## 🧭 Decisions`) of its tactic and a reference is a section
+(`## 📚 References`) of the document that uses it. Never create a document titled `Decisions/...`, `Cycles/...`, a bare reference, or
+any title without its level prefix; if the request has no tactic to hold it, ask which tactic it belongs to (or propose one). Every
+create goes through `scripts/wiki-guard.sh check` first; on REFUSED, fix the path, never bypass it and never create the missing
+ancestors as stubs.
 
 ## 4. Workflows (load only what the row names)
 
 | Workflow | Steps | Load |
 | --- | --- | --- |
 | Find | search, get the one best hit, answer with title and link. If nothing relevant turns up in two searches, say so and stop: do not read unrelated documents | nothing |
-| Create doc | search for a duplicate, pick level, fill template with `realizes:` the parent, create with dates | wiki.md, header.md, STRUCTURE.md, one template |
-| Edit doc | get raw, change only what was asked, update | wiki.md, header.md |
-| Plan cycle | cycle doc `Cycles/<YYMMDD-name>`, sprint project of the same name under the tactic's project, move **each** `Ready` task in (one `pma edit <id> --project` per task), add any missing type, size or area label to a task that lacks them, list ids in Scope | wiki.md, pma.md, STRUCTURE.md, cycle.md |
+| Create doc | search for a duplicate, pick level, `wiki-guard.sh next <level>` for the id, fill the template with `realizes:` the parent, `wiki-guard.sh check` the full chain path, then create with dates | wiki.md, header.md, STRUCTURE.md, one template |
+| Record decision or reference | find the tactic (or the using document), `get --raw`, add the entry under its `## 🧭 Decisions` / `## 📚 References` section, `update`. No new document | wiki.md, STRUCTURE.md, tactical.md |
+| Edit doc | get raw, change only what was asked, update; a retitle keeps its prefix and a move keeps the chain (guard `check` the new path) | wiki.md, header.md |
+| Plan cycle | find or create the tactic's plan, then cycle doc `Cycle <id>: <YYMMDD-name>` under it (guard first), sprint project of the same name under the tactic's project, move **each** `Ready` task in (one `pma edit <id> --project` per task), add any missing type, size or area label to a task that lacks them, list ids in Scope | wiki.md, pma.md, STRUCTURE.md, cycle.md |
 | Requirement | write the HTML note, add to the tactic's `Backlog` (`<Domain>/<Tactic>/Backlog`; create the tactic project and Backlog first if missing), or to `<Domain>/Backlog` when it serves a strategy and has no tactic yet with 3 to 5 labels that describe it (usually type, size, area; create new labels for new ideas) | pma.md, requirement.html |
 | Specify | read the task and what it links (`pma show`, `wiki get`), move the task to `Specifying`, then invoke `superpowers:brainstorming` with the task note and linked tactic as its input and the location `docs/specs/<YYMMDD-name>.md` in the code repo. The spec starts with `Requirement: <project> #<id>`; the note stays untouched. If superpowers is not installed, tell the user (`/plugin install superpowers@claude-plugins-official`) and use `spec.md` meanwhile | pma.md, STRUCTURE.md |
 | Implement | task to `Implementing`, `Review`, `Done`; the commit or PR is recorded in the spec file | pma.md |

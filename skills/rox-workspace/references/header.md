@@ -4,7 +4,7 @@ The first lines of a document, as quote lines. `wiki stale` reads them; roxctl w
 
 ```
 > level: cycle · status: active · owner: qvanle
-> realizes: [Tactic: Execution Trace](url) · depends-on: none
+> realizes: [Plan 2: Trace viewer v1](url) · depends-on: none
 > start: 2026-10-12 · end: 2026-10-16 · updated: 2026-10-08
 ```
 
@@ -12,9 +12,9 @@ The first lines of a document, as quote lines. `wiki stale` reads them; roxctl w
   `realizes`, `depends-on`, `concerns`, `start`, `end`, `updated`. A quote line with any other key is just a quote.
 - **You write**: `level`, `status`, `owner`, `realizes`, `depends-on`, `concerns`. **roxctl writes**: `updated` always, and
   `start` / `end` from `--start` / `--end`. Leave those three out of your file, or put any value there; roxctl overwrites it.
-- `level`: `vision`, `strategy`, `tactical`, `cycle`, `decision`, `reference`.
+- `level`: `vision`, `pillar`, `strategy`, `tactical`, `plan`, `cycle`. There is no `decision` or `reference` level: those are sections of a tactic or of the document that uses them. (`wiki stale` ages only vision, strategy, tactical and cycle; pillar and plan are stale once `end` passes.)
 - `status`: `draft`, `active`, `closed`, `superseded`. Only `active` documents can be stale. Set a replaced document
   `superseded` and a finished cycle or tactic `closed`.
-- `realizes`: a link to the parent document (cycle -> tactic -> strategy -> vision); `none` for a vision, decision or reference.
+- `realizes`: a link to the parent document (cycle -> plan -> tactic -> strategy -> pillar -> vision), the same document the tree nests it under; `none` only for the vision.
 - Dates are `YYYY-MM-DD`, local day. `end` is the end of the period the document governs; for a vision or strategy it is the next review.
 - A document with no block still works. roxctl adds a block holding only `updated` on the next update; add the rest by hand.

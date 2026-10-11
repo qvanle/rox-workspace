@@ -1,5 +1,5 @@
 > level: strategy · status: active · owner: <user>
-> realizes: <[Product Vision: title](url)> · depends-on: none
+> realizes: <[Pillar <id>: name](url)> · depends-on: none
 > start: <YYYY-MM-DD> · end: <next review, YYYY-MM-DD> · updated: (roxctl stamps)
 
 :::info
@@ -7,7 +7,7 @@
 :::
 
 ## 🧭 Context
-(What the vision needs from this strategy, in two or three sentences.)
+(Title: `Strategy <id>: <name>`, a child of its pillar. What the pillar needs from this strategy, in two or three sentences.)
 
 ## 🏛️ Conditions
 (Things that must all hold; drop one and the vision fails. A bet is a condition we are not sure we can meet.)
@@ -35,6 +35,9 @@
 ## ❓ Open questions
 
 - <question>
+
+## 📚 References
+(Facts and diagrams this strategy relies on, written here. A fact another document needs is linked from there, not copied.)
 
 ## 📝 Review notes
 

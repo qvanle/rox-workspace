@@ -5,14 +5,14 @@
       "id": 1,
       "name": "tactic-doc-create",
       "prompt": "write down a tactic in the wiki for adding an audit log of who changed what in workflows. it runs about two months starting next monday",
-      "expected_output": "Searches first, then creates `Tactic: <name>` with a level: tactical header that realizes a pillar/strategy, Markdown body, --start/--end given, through roxctl; the body is visually rich (callouts, tables, emoji headings, checklists)",
+      "expected_output": "Searches first, takes the next id from wiki-guard.sh, passes `wiki-guard.sh check` on the full path `Pillar <id>: .../Strategy <id>: .../Tactic <id>: <name>`, creates it with a level: tactical header that realizes its strategy, Markdown body, --start/--end given, through roxctl; the body is visually rich (callouts, tables, emoji headings, checklists) and has Decisions and References sections",
       "files": []
     },
     {
       "id": 2,
       "name": "plan-sprint",
       "prompt": "plan the sprint starting monday 12 oct, one week, goal: owners can see each workflow step. take tasks 42 and 43 from the backlog",
-      "expected_output": "Cycle doc Cycles/261012-<name> with start/end, sprint project of the same name under the tactic's project (Product/<tactic>/<YYMMDD-name>), buckets, tasks 42 and 43 moved in, ids listed in the cycle doc Scope; tasks that lack type, size or area labels get them",
+      "expected_output": "Cycle doc `Cycle <id>: 261012-<name>` created under the tactic's plan (guard check passes first, id from `wiki-guard.sh next cycle`) with start/end, sprint project of the same name under the tactic's project (Product/<tactic>/<YYMMDD-name>), buckets, tasks 42 and 43 moved in, ids listed in the cycle doc Scope; tasks that lack type, size or area labels get them",
       "files": []
     },
     {
@@ -301,6 +301,27 @@
       "name": "ba-no-decisions",
       "prompt": "(ba) rank these three options and rewrite requirement R2 in the task note",
       "expected_output": "Declined: ba reports what is there, never ranks, recommends or edits; hands the finding back to po or pm",
+      "files": []
+    },
+    {
+      "id": 44,
+      "name": "decision-is-a-section",
+      "prompt": "record a decision in the wiki: we store workflow traces in postgres and expire them after 90 days",
+      "expected_output": "Finds the owning tactic (asks which if unclear), reads it with get --raw, adds a dated entry under its Decisions section and updates it; creates no new document, no Decisions/ folder",
+      "files": []
+    },
+    {
+      "id": 45,
+      "name": "no-root-or-stub-docs",
+      "prompt": "create a wiki page Cycles/261019-cleanup for next week",
+      "expected_output": "wiki-guard.sh refuses (no Cycle <id>: prefix, no plan above); asks which tactic and plan it belongs to or proposes creating them top-down; creates nothing at the root and no stub ancestors",
+      "files": []
+    },
+    {
+      "id": 46,
+      "name": "reference-inline",
+      "prompt": "add a reference page listing the trace table columns",
+      "expected_output": "Does not create a document; adds the table under References in the tactic or plan that uses it, and links to it from any other document that needs it",
       "files": []
     }
   ]

@@ -76,6 +76,6 @@ how. There is no Spec section: the spec file points back at the task. A dependen
 - `vja` has a token in `~/.config/vja/config.rc`; when it expires every pma command fails with exit 3 (preflight reports it).
 - `bucket ls` and `bucket add` act on the project's first Kanban view only.
 - No relation command and no way to set a view's done bucket; do that once in the Vikunja UI.
-- Observed 2026-10-09 (not diagnosed): `pma edit <id> --bucket-id <n>` reports "Modified" but the task stays in its bucket (`To-Do`), also in a project it was created in; check with `bucket ls` and move tasks in the Vikunja UI. `project edit --archive` returned `405 Method Not Allowed` on Vikunja 2.6.
+- Fixed 2026-10-10: `pma edit <id> --bucket-id <n>` used to report "Modified" and leave the task in its bucket, because `vja` sent `bucket_id` in a plain task update, which Vikunja ignores (a bucket is per view). `roxctl` now moves the card through the view-bucket endpoint and reads it back, so a move that did not land is an error. It needs a `roxctl` built from the fixed source.
 - A new project starts with `To-Do`, `Doing`, `Done` buckets, which the CLI cannot delete or rename.
 - Deleting a task is permanent: confirm with the user first.

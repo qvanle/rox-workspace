@@ -1,6 +1,6 @@
-<!-- Title: "Tactic: Execution Trace". ILLUSTRATIVE, not a real plan. -->
+<!-- Title: "Tactic 3: Execution Trace", path "Pillar 1: Radical Accessibility/Strategy 2: Owner-readable execution/Tactic 3: Execution Trace". ILLUSTRATIVE, not a real plan. -->
 > level: tactical · status: active · owner: qvanle
-> realizes: [Pillar 1: Radical Accessibility](url) · depends-on: none
+> realizes: [Strategy 2: Owner-readable execution](url) · depends-on: none
 > start: 2026-10-12 · end: 2026-12-18 · updated: 2026-10-08
 
 :::info
@@ -8,7 +8,7 @@
 :::
 
 ## ⏱️ Why now
-Pillar 1 says transparency is a read experience: the owner watches logic run. Today a run shows its final state but not each
+Strategy 2 says transparency is a read experience: the owner watches logic run. Today a run shows its final state but not each
 step's input and output, which is the vision's differentiator. This initiative closes that gap first.
 
 ## 🎯 Outcomes
@@ -29,7 +29,7 @@ step's input and output, which is the vision's differentiator. This initiative c
 
 | Risk | Signal | Response |
 | --- | --- | --- |
-| 🔐 Traces hold sensitive data | Personal data appears in a trace | Redact by field type; record the decision in `Decisions` |
+| 🔐 Traces hold sensitive data | Personal data appears in a trace | Redact by field type; see the decision below |
 | 💾 Storage grows with runs | Trace storage passes its monthly budget | Expire traces after a set number of days |
 
 :::tip
@@ -38,6 +38,25 @@ step's input and output, which is the vision's differentiator. This initiative c
 
 ## 🚫 Not doing
 - Editing a workflow from the trace view.
+
+## 🧭 Decisions
+
+### 261014 Store traces in Postgres · status: active
+:::success
+**Decision** ==We will store workflow step traces in the platform's Postgres, in a `step_trace` table, and expire them after 90 days.==
+:::
+
+- **Context:** the viewer needs each step's input and output after the run ends; the engine's own history drops outputs early and is not customer-facing; traces can hold business data, so storage must be tenant-isolated.
+- **Options:** ✅ Postgres table, 90-day expiry (same isolation and backup, no new service / needs a cleanup job) · ❌ engine history (nothing to build / outputs expire early) · ❌ object storage per run (cheap for large payloads / harder to query one step).
+- **Consequences:** one query serves the viewer; a cleanup job and a size cap per payload are needed.
+- **Reopen if:** trace storage passes its monthly budget, or owners ask for traces older than 90 days.
+
+## 📚 References
+
+| Item | Value |
+| --- | --- |
+| Trace table | `step_trace` (run id, step id, input, output, status) |
+| Retention | 90 days |
 
 ## 📝 Review notes
 

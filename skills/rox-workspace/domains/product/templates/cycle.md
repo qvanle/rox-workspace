@@ -1,8 +1,8 @@
 > level: cycle · status: active · owner: <user>
-> realizes: <[Tactic: name](url)> · depends-on: none
+> realizes: <[Plan <id>: name](url)> · depends-on: none
 > start: <YYYY-MM-DD> · end: <YYYY-MM-DD> · updated: (roxctl stamps)
 
-(Title: `Cycles/<YYMMDD-name>`, the start date and a short name. The pma sprint project has exactly this name.)
+(Title: `Cycle <id>: <YYMMDD-name>`, a child of its plan; the name is the start date and a short name. The pma sprint project is named exactly the part after `Cycle <id>: `. Decisions go in the tactic's `## 🧭 Decisions`, never here.)
 
 :::info
 **Sprint goal** (one sentence: what is true at the end that is not true now)
@@ -25,3 +25,6 @@
 | 👍 Keep | 🔧 Change | 🗑️ Drop |
 | --- | --- | --- |
 | <item> | <item> | <item> |
+
+## 📚 References
+(Facts this cycle needs, written here. A fact another document needs is linked from there, not copied.)

@@ -7,63 +7,87 @@ Fill a template by replacing every `<placeholder>` and deleting every `(guidance
 
 ## Chain
 
-`vision <- strategy <- tactical <- cycle <- requirement (pma task) <- spec (repo) <- implementation`
+`pillar -> strategy -> tactic -> plan -> cycle`, then `requirement (pma task) <- spec (repo) <- implementation`.
 
-Each wiki doc below vision has `realizes:` naming its parent. Link, never copy.
+Every wiki document is a child of the one before it in the chain, in the Outline tree and in its `realizes:` line. There is no other
+kind of wiki document: **a decision is a section of its tactic, a reference is a section of the document that uses it.** No
+`Decisions`, `Cycles` or `References` folder, no document at the collection root except a pillar (and the one `Product Vision`, which
+a pillar names in `realizes:` and which has no parent).
+
+## Wiki documents (collection `RotexAI production`)
+
+| Level | Title (the prefix is mandatory) | Parent | Template | Review (`end`) | Stale after |
+| --- | --- | --- | --- | --- | --- |
+| vision | `Product Vision: <title>` (one active, the only unprefixed document) | none | `vision.md` | yearly | 400 days |
+| pillar | `Pillar <id>: <name>` | none (root) | `pillar.md` | half-yearly | `end` only |
+| strategy | `Strategy <id>: <name>` | a pillar | `strategy.md` | half-yearly | 200 days |
+| tactical | `Tactic <id>: <initiative>` | a strategy | `tactical.md` | initiative end | 100 days |
+| plan | `Plan <id>: <name>` | a tactic | `plan.md` | plan end | `end` only |
+| cycle | `Cycle <id>: <YYMMDD-name>` | a plan | `cycle.md` | sprint end | 14 days |
+
+`<id>` is a whole number, one sequence per level, never reused (an archived document keeps its id). The next free id comes from
+`bash <skill base dir>/scripts/wiki-guard.sh next <level>`. `<YYMMDD-name>` is the cycle's start date and a kebab-case name; the pma
+sprint project has exactly that name. The header `level:` values are `vision`, `pillar`, `strategy`, `tactical`, `plan`, `cycle`.
+
+A plan is the sequence of cycles that delivers one tactic (its goal, the order of the cycles, the exit test). A tactic may have more
+than one plan over time; a cycle belongs to exactly one plan, and so to one tactic.
 
 ## Which level is this?
 
 1. A reason to exist or a future state: **vision**.
-2. A condition, or a choice among ways to get there, lasting months: **strategy**.
-3. One initiative with a start, an end and a way to know it worked: **tactical**.
-4. A commitment for one sprint, or its result: **cycle**.
-5. Something to be built: **requirement** (pma task). How to build it: **spec** (repo). A choice made: **decision**. A fact: **reference**.
+2. A durable direction the company holds for years: **pillar**.
+3. A condition, or a choice among ways to serve a pillar, lasting months: **strategy**.
+4. One initiative with a start, an end and a way to know it worked: **tactic**.
+5. The order of sprints that delivers a tactic: **plan**. One sprint's commitment and result: **cycle**.
+6. Something to be built: **requirement** (pma task). How to build it: **spec** (repo).
+7. A choice made, or a fact someone must look up: **not a document**. Write it into the section below, in the tactic or cycle that needs it.
 
-## Wiki documents (collection `RotexAI production`)
+### Decisions and references live inside a document
 
-| Level | Title | Template | Review (`end`) | Stale after |
-| --- | --- | --- | --- | --- |
-| vision | `Product Vision: <title>` (one active) | `vision.md` | yearly | 400 days |
-| strategy | `Production Strategy`, `Pillar <n>: <name>` | `strategy.md` | half-yearly | 200 days |
-| tactical | `Tactic: <initiative>` | `tactical.md` | initiative end | 100 days |
-| cycle | `Cycles/<YYMMDD-name>` (index doc `Cycles`) | `cycle.md` | sprint end | 14 days |
-| decision | `Decisions/<YYMMDD-name>` (index doc `Decisions`) | `decision.md` | none | none |
-| reference | any other title | free; first line says what it is for | none | none |
+| Thing | Where | How |
+| --- | --- | --- |
+| Decision | `## 🧭 Decisions` in the **tactic** it serves | One dated entry per decision (format in `tactical.md`). A changed decision is a new entry; the old one is marked `superseded`, never edited away. A decision two tactics need lives in one and the other links to its heading |
+| Reference (a fact, a diagram, a lookup table) | `## 📚 References` in the **document that uses it** (any level) | Written in that document. A second document that needs it links to the section, never copies it |
 
-Existing documents keep their titles. Add the header the next time one is edited. Never rename to hide history; move or archive.
-`YYMMDD` is the start date (cycle) or the day written (decision, spec). Names are kebab-case.
+Nothing is written when there is no tactic to hold it: ask `po` or `pm` which tactic it belongs to, or propose a new one.
 
-## Header block (first lines of every wiki doc)
+## Header block (first lines of every wiki document)
 
 ```
-> level: <vision|strategy|tactical|cycle|decision|reference> · status: <draft|active|closed|superseded> · owner: <user>
+> level: <vision|pillar|strategy|tactical|plan|cycle> · status: <draft|active|closed|superseded> · owner: <user>
 > realizes: <[parent title](url)|none> · depends-on: <links|none>
 > start: YYYY-MM-DD · end: YYYY-MM-DD · updated: YYYY-MM-DD
 ```
 
-Never hand-write `updated`: roxctl stamps it. Pass `--start` and `--end`. A replaced strategy/tactic becomes `superseded`; a
-cycle or tactic is `closed` when its outcome is written.
+Never hand-write `updated`: roxctl stamps it. Pass `--start` and `--end`. A replaced pillar, strategy or tactic becomes `superseded`; a
+plan, cycle or tactic is `closed` when its outcome is written. `realizes:` names the **parent in the tree** (a pillar names the vision).
 
 ## Create commands
 
+Never create a document that does not follow the chain. `roxctl workspace wiki create` accepts any `/` path and silently makes
+missing ancestors as stubs, so the guard runs first and must pass:
+
 ```
 roxctl workspace wiki search "<words>" --limit 5          # always first: no duplicates
-roxctl workspace wiki create "Tactic: <initiative>" --file F --start D --end D
-roxctl workspace wiki create "Cycles/<YYMMDD-name>" --file F --start D --end D
-roxctl workspace wiki create "Decisions/<YYMMDD-name>" --file F
+bash <skill base dir>/scripts/wiki-guard.sh next tactic   # next free id for a level
+bash <skill base dir>/scripts/wiki-guard.sh check "Pillar 1: Radical Accessibility/Strategy 2: <name>/Tactic 5: <initiative>"
+roxctl workspace wiki create "Pillar 1: Radical Accessibility/Strategy 2: <name>/Tactic 5: <initiative>" --file F --start D --end D
 ```
 
-`create` makes missing parents (stubs) and fails if the leaf exists. Read a doc with `get <id> --raw` before `update`.
+The path is the full chain down to the new document, each segment the exact title of an existing ancestor. The guard fails (exit 1,
+nothing is created) when a title lacks its prefix, a level is skipped or out of order, an ancestor does not exist, the id is already
+used at that level, or the leaf exists. A pillar is `create "Pillar <id>: <name>"` alone. The same rules apply to `update --title`
+and `move --parent`: the new title keeps its prefix, the new parent is the level above.
 
 ## Sprint (pma, Vikunja)
 
 ```
 <Domain>                       root per domain (Product), no tasks of its own
   Backlog                      the domain Backlog = the STRATEGY backlog: requirements that serve a strategy
-                               (a Pillar) and have no tactic yet; buckets Idea, Refining, Ready
-  <Tactic name>                one project per tactic, the wiki title without "Tactic: ", no tasks
+                               (a `Strategy <id>:` document) and have no tactic yet; buckets Idea, Refining, Ready
+  <Tactic name>                one project per tactic, the wiki title without "Tactic <id>: ", no tasks
     Backlog                    that tactic's backlog; buckets Idea, Refining, Ready
-    <YYMMDD-name>              one project per sprint of that tactic = the cycle doc title
+    <YYMMDD-name>              one project per sprint of that tactic = the cycle doc title without "Cycle <id>: " (the plan has no pma project)
 ```
 
 The tree is `<domain>/{Backlog, <tactic>/{Backlog, <YYMMDD-sprint>}}`. The level of the backlog is the level of the wiki document it serves: `<domain>/Backlog` serves the strategy, `<domain>/<tactic>/Backlog` serves that tactic. A requirement that serves a tactic belongs to exactly one tactic, so it is written into that tactic's
@@ -77,7 +101,7 @@ project description (goal + wiki cycle link). Archive the sprint project when it
 | Step | Wiki | pma | Role |
 | --- | --- | --- | --- |
 | Refine | | write requirement tasks into the tactic's `Backlog`: `Idea`, `Refining`, `Ready` (Ready = note complete) | pm (`Idea` to `Refining`), po (`Ready`) |
-| Plan | create `Cycles/<name>` with start/end, goal, scope | create the sprint project under the tactic, set goal, buckets; move `Ready` tasks in to `To do` | pm |
+| Plan sprint | create `Cycle <id>: <name>` under the tactic's plan (create the plan first if none) with start/end, goal, scope | create the sprint project under the tactic, set goal, buckets; move `Ready` tasks in to `To do` | pm |
 | Specify | | move to `Specifying`; the spec is written in the code repo by the spec-writing skill (see Spec below). **Never edit the task's note** | sr-se |
 | Implement | | `Implementing`, `Review`; the agent implements against R1..Rn and the spec | sr-se, jr-se |
 | Done | | move to `Done` (this completes it); the commit or PR goes in the spec file, not the note | qc |

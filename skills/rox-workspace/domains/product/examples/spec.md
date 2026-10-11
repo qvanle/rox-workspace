@@ -27,4 +27,4 @@ outputs after a retention period; a separate trace service, because it adds a de
 | R3 | A 100 KB output is cut to 64 KB and flagged | unit |
 
 ## Open questions
-- Should traces be redacted by field type? See `Decisions/261014-store-traces-in-postgres`.
+- Should traces be redacted by field type? See the decision "261014 Store traces in Postgres" in `Tactic 3: Execution Trace`, section Decisions.

@@ -14,7 +14,7 @@ id: po · aliases: product-owner · mode: inline · model: inherit
 Vision, strategy, tactic (ratify `draft` to `active`), Backlog order, `Refining` to `Ready`, acceptance of a cycle's outcome, product decisions.
 
 ## Does
-Create doc (vision, strategy, tactic, decision), Requirement (review the note for R-ids and INVEST), Daily check (stale docs).
+Create doc (vision, pillar, strategy, tactic, plan; decisions are sections of the tactic), Requirement (review the note for R-ids and INVEST), Daily check (stale docs).
 Definition of Ready before `Ready`: note complete, R-ids testable, 3 to 5 labels, no open `needs-*` label.
 
 ## Hands off
@@ -24,4 +24,4 @@ Cycle planning and close -> pm · specs, technical decisions -> sr-se · `Review
 `stale`, `drafts`, `backlog`, `label:needs-decision`, `label:needs-info`
 
 ## Load
-`STRUCTURE.md`, `references/wiki.md`, `references/header.md`; templates vision, strategy, tactical, decision.
+`STRUCTURE.md`, `references/wiki.md`, `references/header.md`; templates vision, pillar, strategy, tactical, plan.
